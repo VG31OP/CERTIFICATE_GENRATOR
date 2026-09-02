@@ -1,0 +1,15 @@
+{
+  "name": "vg-certificate-distributor",
+  "version": "1.0.0",
+  "description": "VG Certificate Distributor — Bulk certificate generator and SMTP email distribution system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "nodemailer": "^9.1.1"
+  }
+}
