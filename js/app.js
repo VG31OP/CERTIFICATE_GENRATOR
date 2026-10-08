@@ -3,29 +3,29 @@
 
   // ── Font catalogue ─────────────────────────────────────────────────
   const FONTS = [
-    { label: 'Great Vibes',         value: "'Great Vibes', cursive",        category: 'Handwriting' },
-    { label: 'Pinyon Script',       value: "'Pinyon Script', cursive",       category: 'Handwriting' },
-    { label: 'Allura',              value: "'Allura', cursive",              category: 'Handwriting' },
-    { label: 'Alex Brush',          value: "'Alex Brush', cursive",          category: 'Handwriting' },
-    { label: 'Sacramento',          value: "'Sacramento', cursive",          category: 'Handwriting' },
-    { label: 'Tangerine',           value: "'Tangerine', cursive",           category: 'Handwriting' },
-    { label: 'Dancing Script',      value: "'Dancing Script', cursive",      category: 'Handwriting' },
-    { label: 'Satisfy',             value: "'Satisfy', cursive",             category: 'Handwriting' },
-    { label: 'Pacifico',            value: "'Pacifico', cursive",            category: 'Handwriting' },
-    { label: 'Cinzel',              value: "'Cinzel', serif",                category: 'Elegant Serif' },
-    { label: 'Cormorant Garamond',  value: "'Cormorant Garamond', serif",    category: 'Elegant Serif' },
-    { label: 'Playfair Display',    value: "'Playfair Display', serif",      category: 'Elegant Serif' },
-    { label: 'EB Garamond',         value: "'EB Garamond', serif",           category: 'Elegant Serif' },
-    { label: 'Crimson Text',        value: "'Crimson Text', serif",          category: 'Elegant Serif' },
-    { label: 'Libre Baskerville',   value: "'Libre Baskerville', serif",     category: 'Elegant Serif' },
-    { label: 'Georgia',             value: 'Georgia, serif',                 category: 'Classic' },
-    { label: 'Palatino',            value: "'Palatino Linotype', serif",     category: 'Classic' },
-    { label: 'Times New Roman',     value: "'Times New Roman', serif",       category: 'Classic' },
-    { label: 'Raleway',             value: "'Raleway', sans-serif",          category: 'Sans-serif' },
-    { label: 'Lato',                value: "'Lato', sans-serif",             category: 'Sans-serif' },
-    { label: 'Arial',               value: 'Arial, sans-serif',              category: 'Sans-serif' },
-    { label: 'Verdana',             value: 'Verdana, sans-serif',            category: 'Sans-serif' },
-    { label: 'Courier New',         value: "'Courier New', monospace",       category: 'Monospace' },
+    { label: 'Great Vibes', value: "'Great Vibes', cursive", category: 'Handwriting' },
+    { label: 'Pinyon Script', value: "'Pinyon Script', cursive", category: 'Handwriting' },
+    { label: 'Allura', value: "'Allura', cursive", category: 'Handwriting' },
+    { label: 'Alex Brush', value: "'Alex Brush', cursive", category: 'Handwriting' },
+    { label: 'Sacramento', value: "'Sacramento', cursive", category: 'Handwriting' },
+    { label: 'Tangerine', value: "'Tangerine', cursive", category: 'Handwriting' },
+    { label: 'Dancing Script', value: "'Dancing Script', cursive", category: 'Handwriting' },
+    { label: 'Satisfy', value: "'Satisfy', cursive", category: 'Handwriting' },
+    { label: 'Pacifico', value: "'Pacifico', cursive", category: 'Handwriting' },
+    { label: 'Cinzel', value: "'Cinzel', serif", category: 'Elegant Serif' },
+    { label: 'Cormorant Garamond', value: "'Cormorant Garamond', serif", category: 'Elegant Serif' },
+    { label: 'Playfair Display', value: "'Playfair Display', serif", category: 'Elegant Serif' },
+    { label: 'EB Garamond', value: "'EB Garamond', serif", category: 'Elegant Serif' },
+    { label: 'Crimson Text', value: "'Crimson Text', serif", category: 'Elegant Serif' },
+    { label: 'Libre Baskerville', value: "'Libre Baskerville', serif", category: 'Elegant Serif' },
+    { label: 'Georgia', value: 'Georgia, serif', category: 'Classic' },
+    { label: 'Palatino', value: "'Palatino Linotype', serif", category: 'Classic' },
+    { label: 'Times New Roman', value: "'Times New Roman', serif", category: 'Classic' },
+    { label: 'Raleway', value: "'Raleway', sans-serif", category: 'Sans-serif' },
+    { label: 'Lato', value: "'Lato', sans-serif", category: 'Sans-serif' },
+    { label: 'Arial', value: 'Arial, sans-serif', category: 'Sans-serif' },
+    { label: 'Verdana', value: 'Verdana, sans-serif', category: 'Sans-serif' },
+    { label: 'Courier New', value: "'Courier New', monospace", category: 'Monospace' },
   ];
 
   // ── Auto-Proportional Size Engine ──────────────────────────────────
@@ -55,16 +55,16 @@
   // ── Default typography for new fields ─────────────────────────────
   function defaultTypography(key = '') {
     return {
-      font:          FONTS[0].value,
-      size:          getAutoFontSizeForField(key),
-      color:         '#000000',
-      bold:          false,
-      italic:        false,
-      align:         'center',
+      font: FONTS[0].value,
+      size: getAutoFontSizeForField(key),
+      color: '#000000',
+      bold: false,
+      italic: false,
+      align: 'center',
       textTransform: 'none',
       shadowEnabled: false,
-      shadowColor:   '#000000',
-      shadowBlur:    6,
+      shadowColor: '#000000',
+      shadowBlur: 6,
       shadowOffsetX: 2,
       shadowOffsetY: 3,
       shadowOpacity: 60,
@@ -73,93 +73,93 @@
 
   // ── Application State ──────────────────────────────────────────────
   const state = {
-    image:          null,
-    templateType:   'vg-luxury',
-    naturalW:       2000,
-    naturalH:       1414,
-    scale:          0.65,
-    fields:         [],   // [{key, x, y, font, size, color, bold, italic, align, ...}]
+    image: null,
+    templateType: 'vg-luxury',
+    naturalW: 2000,
+    naturalH: 1414,
+    scale: 0.65,
+    fields: [],   // [{key, x, y, font, size, color, bold, italic, align, ...}]
     activeFieldIdx: -1,
-    draggingField:  false,
-    dragFieldOffX:  0,
-    dragFieldOffY:  0,
-    isPanning:      false,
-    panStartX:      0,
-    panStartY:      0,
-    scrollStartX:   0,
-    scrollStartY:   0,
-    committedFont:  FONTS[0].value,
-    hoverFont:      null,
-    excelData:      [],
-    excelColumns:   [],
-    previewRowIdx:  0,
-    editingRowIdx:  -1,
-    rowOverrides:   {},   // { rowIdx: { fieldKey: { ...typography/pos } } }
-    undoStack:      [],
-    redoStack:      [],
+    draggingField: false,
+    dragFieldOffX: 0,
+    dragFieldOffY: 0,
+    isPanning: false,
+    panStartX: 0,
+    panStartY: 0,
+    scrollStartX: 0,
+    scrollStartY: 0,
+    committedFont: FONTS[0].value,
+    hoverFont: null,
+    excelData: [],
+    excelColumns: [],
+    previewRowIdx: 0,
+    editingRowIdx: -1,
+    rowOverrides: {},   // { rowIdx: { fieldKey: { ...typography/pos } } }
+    undoStack: [],
+    redoStack: [],
   };
 
   // ── DOM References ─────────────────────────────────────────────────
-  const canvas         = document.getElementById('previewCanvas');
-  const ctx            = canvas.getContext('2d');
-  const canvasWrap     = document.getElementById('canvasWrap');
+  const canvas = document.getElementById('previewCanvas');
+  const ctx = canvas.getContext('2d');
+  const canvasWrap = document.getElementById('canvasWrap');
   const canvasContainer = document.getElementById('canvasContainer');
 
   // Typography controls
-  const fontSize       = document.getElementById('fontSize');
-  const fontColor      = document.getElementById('fontColor');
-  const fontColorHex   = document.getElementById('fontColorHex');
-  const boldBtn        = document.getElementById('boldBtn');
-  const italicBtn      = document.getElementById('italicBtn');
-  const alignBtns      = document.querySelectorAll('.align-btn');
-  const transformBtns  = document.querySelectorAll('.transform-btn');
+  const fontSize = document.getElementById('fontSize');
+  const fontColor = document.getElementById('fontColor');
+  const fontColorHex = document.getElementById('fontColorHex');
+  const boldBtn = document.getElementById('boldBtn');
+  const italicBtn = document.getElementById('italicBtn');
+  const alignBtns = document.querySelectorAll('.align-btn');
+  const transformBtns = document.querySelectorAll('.transform-btn');
   const activeFieldLabel = document.getElementById('activeFieldLabel');
   const btnRemoveField = document.getElementById('btnRemoveField');
-  const posX           = document.getElementById('posX');
-  const posY           = document.getElementById('posY');
+  const posX = document.getElementById('posX');
+  const posY = document.getElementById('posY');
 
   // Shadow controls
-  const shadowEnabled  = document.getElementById('shadowEnabled');
+  const shadowEnabled = document.getElementById('shadowEnabled');
   const shadowControls = document.getElementById('shadowControls');
-  const shadowColor    = document.getElementById('shadowColor');
+  const shadowColor = document.getElementById('shadowColor');
   const shadowColorHex = document.getElementById('shadowColorHex');
-  const shadowBlur     = document.getElementById('shadowBlur');
-  const shadowOffsetX  = document.getElementById('shadowOffsetX');
-  const shadowOffsetY  = document.getElementById('shadowOffsetY');
-  const shadowOpacity  = document.getElementById('shadowOpacity');
+  const shadowBlur = document.getElementById('shadowBlur');
+  const shadowOffsetX = document.getElementById('shadowOffsetX');
+  const shadowOffsetY = document.getElementById('shadowOffsetY');
+  const shadowOpacity = document.getElementById('shadowOpacity');
   const shadowOpacityVal = document.getElementById('shadowOpacityVal');
 
   // Nudge controls
-  const btnNudgeUp     = document.getElementById('btnNudgeUp');
-  const btnNudgeDown   = document.getElementById('btnNudgeDown');
-  const btnNudgeLeft   = document.getElementById('btnNudgeLeft');
-  const btnNudgeRight  = document.getElementById('btnNudgeRight');
+  const btnNudgeUp = document.getElementById('btnNudgeUp');
+  const btnNudgeDown = document.getElementById('btnNudgeDown');
+  const btnNudgeLeft = document.getElementById('btnNudgeLeft');
+  const btnNudgeRight = document.getElementById('btnNudgeRight');
   const btnCenterField = document.getElementById('btnCenterField');
 
   // Zoom controls
-  const zoomInBtn      = document.getElementById('zoomIn');
-  const zoomOutBtn     = document.getElementById('zoomOut');
-  const zoomLbl        = document.getElementById('zoomLbl');
-  const zoomFitBtn     = document.getElementById('zoomFit');
-  const zoom100Btn     = document.getElementById('zoom100');
+  const zoomInBtn = document.getElementById('zoomIn');
+  const zoomOutBtn = document.getElementById('zoomOut');
+  const zoomLbl = document.getElementById('zoomLbl');
+  const zoomFitBtn = document.getElementById('zoomFit');
+  const zoom100Btn = document.getElementById('zoom100');
 
   // Font picker
-  const fontPicker     = document.getElementById('fontPicker');
-  const fontTrigger    = document.getElementById('fontTrigger');
+  const fontPicker = document.getElementById('fontPicker');
+  const fontTrigger = document.getElementById('fontTrigger');
   const fontTriggerLabel = document.getElementById('fontTriggerLabel');
-  const fontDropdown   = document.getElementById('fontDropdown');
+  const fontDropdown = document.getElementById('fontDropdown');
 
   // Excel & Data
-  const excelFile      = document.getElementById('excelFile');
+  const excelFile = document.getElementById('excelFile');
   const excelUploadArea = document.getElementById('excelUploadArea');
   const excelUploadLabel = document.getElementById('excelUploadLabel');
   const excelPreviewWrap = document.getElementById('excelPreviewWrap');
   const excelTableBody = document.getElementById('excelTableBody');
   const excelPreviewTitle = document.getElementById('excelPreviewTitle');
-  const excelCount     = document.getElementById('excelCount');
-  const btnClearExcel  = document.getElementById('btnClearExcel');
+  const excelCount = document.getElementById('excelCount');
+  const btnClearExcel = document.getElementById('btnClearExcel');
   const columnFieldsSection = document.getElementById('columnFieldsSection');
-  const columnChipsEl  = document.getElementById('columnChips');
+  const columnChipsEl = document.getElementById('columnChips');
   const btnLoadSampleData = document.getElementById('btnLoadSampleData');
 
   // Recipient Stepper in HUD
@@ -169,61 +169,61 @@
   const btnResetRowOverride = document.getElementById('btnResetRowOverride');
 
   // Quick Action Buttons
-  const btnHeaderDemo     = document.getElementById('btnHeaderDemo');
+  const btnHeaderDemo = document.getElementById('btnHeaderDemo');
   const btnAddFieldDirect = document.getElementById('btnAddFieldDirect');
-  const btnUndo           = document.getElementById('btnUndo');
-  const btnRedo           = document.getElementById('btnRedo');
+  const btnUndo = document.getElementById('btnUndo');
+  const btnRedo = document.getElementById('btnRedo');
 
   // Export Buttons
   const exportDropdownWrap = document.getElementById('exportDropdownWrap');
-  const btnExportMenu      = document.getElementById('btnExportMenu');
-  const btnDownloadPng     = document.getElementById('btnDownloadPng');
-  const btnDownloadPdf     = document.getElementById('btnDownloadPdf');
-  const btnDownloadZip     = document.getElementById('btnDownloadZip');
-  const btnSendAllEmails   = document.getElementById('btnSendAllEmails');
+  const btnExportMenu = document.getElementById('btnExportMenu');
+  const btnDownloadPng = document.getElementById('btnDownloadPng');
+  const btnDownloadPdf = document.getElementById('btnDownloadPdf');
+  const btnDownloadZip = document.getElementById('btnDownloadZip');
+  const btnSendAllEmails = document.getElementById('btnSendAllEmails');
 
   // Modals
-  const smtpModal       = document.getElementById('smtpModal');
-  const smtpModalClose  = document.getElementById('smtpModalClose');
-  const btnOpenSmtp     = document.getElementById('btnOpenSmtp');
+  const smtpModal = document.getElementById('smtpModal');
+  const smtpModalClose = document.getElementById('smtpModalClose');
+  const btnOpenSmtp = document.getElementById('btnOpenSmtp');
   const btnConfigSmtpSidebar = document.getElementById('btnConfigSmtpSidebar');
-  const btnSaveSmtp     = document.getElementById('btnSaveSmtp');
-  const btnTestSmtp     = document.getElementById('btnTestSmtp');
-  const smtpTestResult  = document.getElementById('smtpTestResult');
+  const btnSaveSmtp = document.getElementById('btnSaveSmtp');
+  const btnTestSmtp = document.getElementById('btnTestSmtp');
+  const smtpTestResult = document.getElementById('smtpTestResult');
   const smtpStatusBadge = document.getElementById('smtpStatusBadge');
-  const smtpHostVal     = document.getElementById('smtpHostVal');
-  const smtpUserVal     = document.getElementById('smtpUserVal');
-  const smtpHost        = document.getElementById('smtpHost');
-  const smtpPort        = document.getElementById('smtpPort');
-  const smtpUser        = document.getElementById('smtpUser');
-  const smtpPass        = document.getElementById('smtpPass');
-  const smtpFromName    = document.getElementById('smtpFromName');
+  const smtpHostVal = document.getElementById('smtpHostVal');
+  const smtpUserVal = document.getElementById('smtpUserVal');
+  const smtpHost = document.getElementById('smtpHost');
+  const smtpPort = document.getElementById('smtpPort');
+  const smtpUser = document.getElementById('smtpUser');
+  const smtpPass = document.getElementById('smtpPass');
+  const smtpFromName = document.getElementById('smtpFromName');
 
-  const emailModal      = document.getElementById('emailModal');
+  const emailModal = document.getElementById('emailModal');
   const emailModalClose = document.getElementById('emailModalClose');
-  const emailModalDone  = document.getElementById('emailModalDone');
+  const emailModalDone = document.getElementById('emailModalDone');
   const btnOpenComposeSidebar = document.getElementById('btnOpenComposeSidebar');
-  const composeSummary  = document.getElementById('composeSummary');
-  const varChipsEl      = document.getElementById('varChips');
-  const emailSubject    = document.getElementById('emailSubject');
-  const emailBody       = document.getElementById('emailBody');
-  const btnSendEmails   = document.getElementById('btnSendEmails');
+  const composeSummary = document.getElementById('composeSummary');
+  const varChipsEl = document.getElementById('varChips');
+  const emailSubject = document.getElementById('emailSubject');
+  const emailBody = document.getElementById('emailBody');
+  const btnSendEmails = document.getElementById('btnSendEmails');
   const emailProgressWrap = document.getElementById('emailProgressWrap');
   const emailProgressFill = document.getElementById('emailProgressFill');
-  const emailProgressLbl  = document.getElementById('emailProgressLbl');
-  const emailResultLog    = document.getElementById('emailResultLog');
+  const emailProgressLbl = document.getElementById('emailProgressLbl');
+  const emailResultLog = document.getElementById('emailResultLog');
 
-  const shortcutsModal  = document.getElementById('shortcutsModal');
+  const shortcutsModal = document.getElementById('shortcutsModal');
   const shortcutsModalClose = document.getElementById('shortcutsModalClose');
   const shortcutsModalDone = document.getElementById('shortcutsModalDone');
   const btnOpenShortcuts = document.getElementById('btnOpenShortcuts');
 
-  const certFileInput   = document.getElementById('certFileInput');
+  const certFileInput = document.getElementById('certFileInput');
   const btnUploadCustomTpl = document.getElementById('btnUploadCustomTpl');
 
-  const progressWrap    = document.getElementById('progressWrap');
-  const progressFill    = document.getElementById('progressFill');
-  const progressLbl     = document.getElementById('progressLbl');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressFill = document.getElementById('progressFill');
+  const progressLbl = document.getElementById('progressLbl');
 
   const API_BASE = (window.location.origin && !window.location.origin.startsWith('null') && !window.location.origin.startsWith('file'))
     ? window.location.origin
@@ -335,7 +335,7 @@
     fontDropdown.classList.add('open');
     fontTrigger.classList.add('open');
     FONTS.forEach(f => {
-      document.fonts.load(`${parseInt(fontSize.value) || 700}px ${f.value}`).catch(() => {});
+      document.fonts.load(`${parseInt(fontSize.value) || 700}px ${f.value}`).catch(() => { });
     });
   }
 
@@ -388,16 +388,16 @@
   // ── Typography Read / Write ────────────────────────────────────────
   function readTypographyFromControls() {
     return {
-      font:          state.committedFont,
-      size:          parseInt(fontSize.value) || 700,
-      color:         fontColor.value,
-      bold:          boldBtn.classList.contains('active'),
-      italic:        italicBtn.classList.contains('active'),
-      align:         document.querySelector('.align-btn.active')?.dataset.align || 'center',
+      font: state.committedFont,
+      size: parseInt(fontSize.value) || 700,
+      color: fontColor.value,
+      bold: boldBtn.classList.contains('active'),
+      italic: italicBtn.classList.contains('active'),
+      align: document.querySelector('.align-btn.active')?.dataset.align || 'center',
       textTransform: document.querySelector('.transform-btn.active')?.dataset.transform || 'none',
       shadowEnabled: shadowEnabled.checked,
-      shadowColor:   shadowColor.value,
-      shadowBlur:    parseInt(shadowBlur.value) || 0,
+      shadowColor: shadowColor.value,
+      shadowBlur: parseInt(shadowBlur.value) || 0,
       shadowOffsetX: parseInt(shadowOffsetX.value) || 0,
       shadowOffsetY: parseInt(shadowOffsetY.value) || 0,
       shadowOpacity: parseInt(shadowOpacity.value) || 60,
@@ -519,7 +519,7 @@
   function buildFieldFont(field, overrideFont) {
     const parts = [];
     if (field.italic) parts.push('italic');
-    if (field.bold)   parts.push('bold');
+    if (field.bold) parts.push('bold');
     parts.push(`${field.size}px`);
     parts.push(overrideFont || field.font);
     return parts.join(' ');
@@ -533,14 +533,14 @@
 
   function drawFieldOnCtx(c, field, value, x, y, fontOverride) {
     const displayValue = applyTextTransform(value, field.textTransform || 'none');
-    c.font         = fontOverride || buildFieldFont(field);
-    c.fillStyle    = field.color;
-    c.textAlign    = field.align;
+    c.font = fontOverride || buildFieldFont(field);
+    c.fillStyle = field.color;
+    c.textAlign = field.align;
     c.textBaseline = 'middle';
 
     if (field.shadowEnabled) {
-      c.shadowColor   = hexToRgba(field.shadowColor, field.shadowOpacity);
-      c.shadowBlur    = field.shadowBlur;
+      c.shadowColor = hexToRgba(field.shadowColor, field.shadowOpacity);
+      c.shadowBlur = field.shadowBlur;
       c.shadowOffsetX = field.shadowOffsetX;
       c.shadowOffsetY = field.shadowOffsetY;
     } else {
@@ -559,7 +559,7 @@
     const w = state.naturalW;
     const h = state.naturalH;
     if (canvas.width !== w || canvas.height !== h) {
-      canvas.width  = w;
+      canvas.width = w;
       canvas.height = h;
     }
 
@@ -630,7 +630,7 @@
         canvas.height = state.naturalH;
         needsRedraw = true;
       }
-      canvas.style.width  = Math.round(state.naturalW  * state.scale) + 'px';
+      canvas.style.width = Math.round(state.naturalW * state.scale) + 'px';
       canvas.style.height = Math.round(state.naturalH * state.scale) + 'px';
       if (needsRedraw) render();
     }
@@ -680,7 +680,7 @@
         setZoom(newScale);
         const scaleRatio = newScale / prevScale;
         canvasWrap.scrollLeft = (mouseX * scaleRatio) - (e.clientX - wrapRect.left);
-        canvasWrap.scrollTop  = (mouseY * scaleRatio) - (e.clientY - wrapRect.top);
+        canvasWrap.scrollTop = (mouseY * scaleRatio) - (e.clientY - wrapRect.top);
       }
     }, { passive: false });
   }
@@ -691,8 +691,8 @@
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return {
-      x: (clientX - rect.left)  / rect.width,
-      y: (clientY - rect.top)   / rect.height,
+      x: (clientX - rect.left) / rect.width,
+      y: (clientY - rect.top) / rect.height,
     };
   }
 
@@ -740,7 +740,7 @@
       const dx = e.clientX - state.panStartX;
       const dy = e.clientY - state.panStartY;
       canvasWrap.scrollLeft = state.scrollStartX - dx;
-      canvasWrap.scrollTop  = state.scrollStartY - dy;
+      canvasWrap.scrollTop = state.scrollStartY - dy;
       return;
     }
     if (!state.draggingField || state.activeFieldIdx < 0) return;
@@ -815,9 +815,9 @@
   window.addEventListener('keydown', e => {
     if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) return;
 
-    if (e.key === 'ArrowUp')    { e.preventDefault(); nudgeField(0, e.shiftKey ? -20 : -2); }
-    if (e.key === 'ArrowDown')  { e.preventDefault(); nudgeField(0, e.shiftKey ? 20 : 2); }
-    if (e.key === 'ArrowLeft')  { e.preventDefault(); nudgeField(e.shiftKey ? -20 : -2, 0); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); nudgeField(0, e.shiftKey ? -20 : -2); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); nudgeField(0, e.shiftKey ? 20 : 2); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); nudgeField(e.shiftKey ? -20 : -2, 0); }
     if (e.key === 'ArrowRight') { e.preventDefault(); nudgeField(e.shiftKey ? 20 : 2, 0); }
 
     if ((e.key === 'Delete' || e.key === 'Backspace') && state.activeFieldIdx >= 0) {
@@ -1298,7 +1298,7 @@
       try {
         if (id != null) store.delete(id);
         if (typeof id === 'string' && !isNaN(Number(id))) store.delete(Number(id));
-      } catch (_) {}
+      } catch (_) { }
 
       const req = store.openCursor();
       req.onsuccess = e => {
@@ -1320,10 +1320,10 @@
 
   // ── Custom Templates UI Renderer ───────────────────────────────────
   const customTemplatesSection = document.getElementById('customTemplatesSection');
-  const customTemplatesGrid    = document.getElementById('customTemplatesGrid');
-  const customTemplatesCount   = document.getElementById('customTemplatesCount');
-  const tplUploadDropzone      = document.getElementById('tplUploadDropzone');
-  const tplUploadLabel         = document.getElementById('tplUploadLabel');
+  const customTemplatesGrid = document.getElementById('customTemplatesGrid');
+  const customTemplatesCount = document.getElementById('customTemplatesCount');
+  const tplUploadDropzone = document.getElementById('tplUploadDropzone');
+  const tplUploadLabel = document.getElementById('tplUploadLabel');
 
   async function removeCustomTemplate(tplId, tplName) {
     if (!tplId && !tplName) return;
@@ -1437,7 +1437,7 @@
     btnSelectTplLuxury.addEventListener('click', () => {
       document.querySelectorAll('.template-card, .custom-template-card').forEach(c => c.classList.remove('active'));
       btnSelectTplLuxury.classList.add('active');
-      generateTemplateCanvas('vg-luxury', () => toast('VG Luxury Monochrome loaded', 'success'));
+      generateTemplateCanvas('vg-luxury', () => toast('VG DEMO Certificate loaded', 'success'));
     });
   }
 
@@ -1609,7 +1609,7 @@
   function generateCertBlob(rowData, rowIdx = -1) {
     return new Promise(resolve => {
       const off = document.createElement('canvas');
-      off.width  = state.naturalW;
+      off.width = state.naturalW;
       off.height = state.naturalH;
       const oc = off.getContext('2d');
       oc.fillStyle = '#ffffff';
@@ -1737,14 +1737,14 @@
       }
       if (saved.fromName) smtpFromName.value = saved.fromName;
       updateSmtpBadge(!!saved.host && !!saved.user);
-    } catch (_) {}
+    } catch (_) { }
   }
 
   function saveSmtpToStorage() {
     const cfg = {
-      host:     smtpHost.value.trim(),
-      port:     smtpPort.value,
-      user:     smtpUser.value.trim(),
+      host: smtpHost.value.trim(),
+      port: smtpPort.value,
+      user: smtpUser.value.trim(),
       fromName: smtpFromName.value.trim(),
     };
     localStorage.setItem('certgen_smtp', JSON.stringify(cfg));
@@ -1800,10 +1800,10 @@
 
   function getSmtpConfig() {
     return {
-      host:     smtpHost.value.trim(),
-      port:     parseInt(smtpPort.value, 10) || 587,
-      user:     smtpUser.value.trim(),
-      pass:     smtpPass.value,
+      host: smtpHost.value.trim(),
+      port: parseInt(smtpPort.value, 10) || 587,
+      user: smtpUser.value.trim(),
+      pass: smtpPass.value,
       fromName: smtpFromName.value.trim(),
     };
   }

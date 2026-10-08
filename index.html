@@ -1,607 +1,736 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VG Certificate Studio — Bulk Generator &amp; Automated Mailer</title>
-  
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cinzel:wght@500;700;900&family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Pinyon+Script&family=Sacramento&family=Allura&family=Alex+Brush&family=Satisfy&family=Pacifico&family=Tangerine:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;700&display=swap" rel="stylesheet" />
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cinzel:wght@500;700;900&family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Pinyon+Script&family=Sacramento&family=Allura&family=Alex+Brush&family=Satisfy&family=Pacifico&family=Tangerine:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;700&display=swap"
+    rel="stylesheet" />
+
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
 
-<!-- ── Studio Header ─────────────────────────────────── -->
-<header class="studio-header">
-  <div class="header-brand">
-    <div class="logo-monogram">VG</div>
-    <div class="brand-text">
-      <div class="brand-title-row">
-        <h1>VG Certificate Studio</h1>
-        <span class="badge-pro">PRO v1.0</span>
-        <span class="system-status-indicator" title="Server Online &amp; Healthy">
-          <span class="status-pulse"></span>
-          <span class="status-text">ONLINE</span>
-        </span>
-      </div>
-      <p class="brand-subtitle">Bulk Certificate Generator, Dynamic Typography &amp; SMTP Mailer</p>
-    </div>
-  </div>
-
-  <!-- Header Quick Actions -->
-  <div class="header-actions">
-    <button class="btn-hdr btn-hdr-demo" id="btnHeaderDemo" type="button" title="Load full demo project with sample certificate &amp; recipients">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      <span>Load Demo</span>
-    </button>
-
-    <button class="btn-hdr" id="btnOpenShortcuts" type="button" title="Keyboard Shortcuts (?)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
-      <span>Shortcuts</span>
-    </button>
-
-    <button class="btn-hdr" id="btnOpenSmtp" type="button" title="Configure SMTP Email Server">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
-      <span>SMTP Config</span>
-      <span class="smtp-pill-badge" id="smtpStatusBadge">Not set</span>
-    </button>
-
-    <div class="dropdown-wrap" id="exportDropdownWrap">
-      <button class="btn-hdr btn-hdr-primary" id="btnExportMenu" type="button">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>Export / Distribute</span>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="export-menu" id="exportMenu">
-        <button type="button" class="export-item" id="btnDownloadPng">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <div class="export-item-info">
-            <span class="export-item-title">Current Certificate (PNG)</span>
-            <span class="export-item-sub">High-resolution single image</span>
-          </div>
-        </button>
-        <button type="button" class="export-item" id="btnDownloadPdf">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          <div class="export-item-info">
-            <span class="export-item-title">Current Certificate (PDF)</span>
-            <span class="export-item-sub">Print-ready document</span>
-          </div>
-        </button>
-        <div class="export-divider"></div>
-        <button type="button" class="export-item" id="btnDownloadZip">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <div class="export-item-info">
-            <span class="export-item-title">Batch Download (ZIP)</span>
-            <span class="export-item-sub">Generate all recipient certificates</span>
-          </div>
-        </button>
-        <button type="button" class="export-item" id="btnSendAllEmails">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          <div class="export-item-info">
-            <span class="export-item-title">Email Distribution</span>
-            <span class="export-item-sub">Send directly to each recipient's inbox</span>
-          </div>
-        </button>
-      </div>
-    </div>
-  </div>
-</header>
-
-<!-- ── Studio App Body ──────────────────────────────── -->
-<div class="studio-app">
-
-  <!-- Left Sidebar Controls -->
-  <aside class="studio-sidebar" id="sidebar">
-
-    <!-- Studio Tab Navigation -->
-    <div class="sidebar-tabs">
-      <button type="button" class="sidebar-tab active" data-tab="tab-data" id="tabBtnData">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <span>Data</span>
-      </button>
-      <button type="button" class="sidebar-tab" data-tab="tab-typography" id="tabBtnTypography">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-        <span>Style</span>
-      </button>
-      <button type="button" class="sidebar-tab" data-tab="tab-templates" id="tabBtnTemplates">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <span>Templates</span>
-      </button>
-      <button type="button" class="sidebar-tab" data-tab="tab-email" id="tabBtnEmail">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <span>Email</span>
-      </button>
-    </div>
-
-    <!-- ── TAB 1: DATA & RECIPIENTS ────────────────────── -->
-    <div class="tab-content active" id="tab-data">
-      <div class="sidebar-section">
-        <div class="section-header">
-          <h3>Recipient Data Source</h3>
-          <span class="section-badge" id="excelCount">0 rows</span>
+  <!-- ── Studio Header ─────────────────────────────────── -->
+  <header class="studio-header">
+    <div class="header-brand">
+      <div class="logo-monogram">VG</div>
+      <div class="brand-text">
+        <div class="brand-title-row">
+          <h1>VG Certificate Studio</h1>
+          <span class="badge-pro">PRO v1.0</span>
+          <span class="system-status-indicator" title="Server Online &amp; Healthy">
+            <span class="status-pulse"></span>
+            <span class="status-text">ONLINE</span>
+          </span>
         </div>
-
-        <div class="upload-dropzone" id="excelUploadArea">
-          <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" />
-          <div class="upload-inner">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <span class="upload-title" id="excelUploadLabel">Drop Excel / CSV file</span>
-            <span class="upload-hint">Supports .xlsx, .xls, .csv</span>
-          </div>
-        </div>
-
-        <button class="btn-subtle" id="btnLoadSampleData" type="button">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Load 4 Sample Recipients
-        </button>
-      </div>
-
-      <!-- Column Chips / Draggable Tokens -->
-      <div class="sidebar-section" id="columnFieldsSection" style="display:none">
-        <div class="section-header">
-          <h3>Draggable Data Columns</h3>
-          <span class="hint-pill">drag to canvas</span>
-        </div>
-        <p class="field-hint">Drag any column token onto the certificate canvas to bind that dynamic data field.</p>
-        <div class="column-chips" id="columnChips"></div>
-      </div>
-
-      <!-- Recipient Data Table -->
-      <div class="sidebar-section" id="excelPreviewWrap" style="display:none">
-        <div class="section-header">
-          <h3 id="excelPreviewTitle">Recipients List</h3>
-          <button class="btn-text-danger" id="btnClearExcel" type="button">Clear</button>
-        </div>
-        <div class="excel-table-container">
-          <table class="excel-table" id="excelTable">
-            <thead id="excelTableHead"><tr><th>#</th><th>Name</th><th>Email</th></tr></thead>
-            <tbody id="excelTableBody"></tbody>
-          </table>
-        </div>
+        <p class="brand-subtitle">Bulk Certificate Generator, Dynamic Typography &amp; SMTP Mailer</p>
       </div>
     </div>
 
-    <!-- ── TAB 2: TYPOGRAPHY & STYLE ──────────────────── -->
-    <div class="tab-content" id="tab-typography">
-      <div class="sidebar-section">
-        <div class="section-header">
-          <h3>Selected Field</h3>
-          <span class="active-field-badge" id="activeFieldLabel">no field selected</span>
+    <!-- Header Quick Actions -->
+    <div class="header-actions">
+      <button class="btn-hdr btn-hdr-demo" id="btnHeaderDemo" type="button"
+        title="Load full demo project with sample certificate &amp; recipients">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        <span>Load Demo</span>
+      </button>
+
+      <button class="btn-hdr" id="btnOpenShortcuts" type="button" title="Keyboard Shortcuts (?)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10" />
+        </svg>
+        <span>Shortcuts</span>
+      </button>
+
+      <button class="btn-hdr" id="btnOpenSmtp" type="button" title="Configure SMTP Email Server">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14" />
+        </svg>
+        <span>SMTP Config</span>
+        <span class="smtp-pill-badge" id="smtpStatusBadge">Not set</span>
+      </button>
+
+      <div class="dropdown-wrap" id="exportDropdownWrap">
+        <button class="btn-hdr btn-hdr-primary" id="btnExportMenu" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>Export / Distribute</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div class="export-menu" id="exportMenu">
+          <button type="button" class="export-item" id="btnDownloadPng">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="M21 15l-5-5L5 21" />
+            </svg>
+            <div class="export-item-info">
+              <span class="export-item-title">Current Certificate (PNG)</span>
+              <span class="export-item-sub">High-resolution single image</span>
+            </div>
+          </button>
+          <button type="button" class="export-item" id="btnDownloadPdf">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            <div class="export-item-info">
+              <span class="export-item-title">Current Certificate (PDF)</span>
+              <span class="export-item-sub">Print-ready document</span>
+            </div>
+          </button>
+          <div class="export-divider"></div>
+          <button type="button" class="export-item" id="btnDownloadZip">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            <div class="export-item-info">
+              <span class="export-item-title">Batch Download (ZIP)</span>
+              <span class="export-item-sub">Generate all recipient certificates</span>
+            </div>
+          </button>
+          <button type="button" class="export-item" id="btnSendAllEmails">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+            <div class="export-item-info">
+              <span class="export-item-title">Email Distribution</span>
+              <span class="export-item-sub">Send directly to each recipient's inbox</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Studio App Body ──────────────────────────────── -->
+  <div class="studio-app">
+
+    <!-- Left Sidebar Controls -->
+    <aside class="studio-sidebar" id="sidebar">
+
+      <!-- Studio Tab Navigation -->
+      <div class="sidebar-tabs">
+        <button type="button" class="sidebar-tab active" data-tab="tab-data" id="tabBtnData">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          <span>Data</span>
+        </button>
+        <button type="button" class="sidebar-tab" data-tab="tab-typography" id="tabBtnTypography">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="4 7 4 4 20 4 20 7" />
+            <line x1="9" y1="20" x2="15" y2="20" />
+            <line x1="12" y1="4" x2="12" y2="20" />
+          </svg>
+          <span>Style</span>
+        </button>
+        <button type="button" class="sidebar-tab" data-tab="tab-templates" id="tabBtnTemplates">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+          <span>Templates</span>
+        </button>
+        <button type="button" class="sidebar-tab" data-tab="tab-email" id="tabBtnEmail">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+          <span>Email</span>
+        </button>
+      </div>
+
+      <!-- ── TAB 1: DATA & RECIPIENTS ────────────────────── -->
+      <div class="tab-content active" id="tab-data">
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Recipient Data Source</h3>
+            <span class="section-badge" id="excelCount">0 rows</span>
+          </div>
+
+          <div class="upload-dropzone" id="excelUploadArea">
+            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" />
+            <div class="upload-inner">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <span class="upload-title" id="excelUploadLabel">Drop Excel / CSV file</span>
+              <span class="upload-hint">Supports .xlsx, .xls, .csv</span>
+            </div>
+          </div>
+
+          <button class="btn-subtle" id="btnLoadSampleData" type="button">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            Load 4 Sample Recipients
+          </button>
         </div>
 
-        <div class="field-group">
-          <label>Font Family</label>
-          <div class="font-picker" id="fontPicker">
-            <button class="font-trigger" id="fontTrigger" type="button">
-              <span id="fontTriggerLabel">Great Vibes</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        <!-- Column Chips / Draggable Tokens -->
+        <div class="sidebar-section" id="columnFieldsSection" style="display:none">
+          <div class="section-header">
+            <h3>Draggable Data Columns</h3>
+            <span class="hint-pill">drag to canvas</span>
+          </div>
+          <p class="field-hint">Drag any column token onto the certificate canvas to bind that dynamic data field.</p>
+          <div class="column-chips" id="columnChips"></div>
+        </div>
+
+        <!-- Recipient Data Table -->
+        <div class="sidebar-section" id="excelPreviewWrap" style="display:none">
+          <div class="section-header">
+            <h3 id="excelPreviewTitle">Recipients List</h3>
+            <button class="btn-text-danger" id="btnClearExcel" type="button">Clear</button>
+          </div>
+          <div class="excel-table-container">
+            <table class="excel-table" id="excelTable">
+              <thead id="excelTableHead">
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody id="excelTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 2: TYPOGRAPHY & STYLE ──────────────────── -->
+      <div class="tab-content" id="tab-typography">
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Selected Field</h3>
+            <span class="active-field-badge" id="activeFieldLabel">no field selected</span>
+          </div>
+
+          <div class="field-group">
+            <label>Font Family</label>
+            <div class="font-picker" id="fontPicker">
+              <button class="font-trigger" id="fontTrigger" type="button">
+                <span id="fontTriggerLabel">Great Vibes</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              <div class="font-dropdown" id="fontDropdown"></div>
+            </div>
+          </div>
+
+          <div class="row-2col">
+            <div class="field-group">
+              <label>Size (px)</label>
+              <input type="number" id="fontSize" value="82" min="8" max="2500" step="1" />
+            </div>
+            <div class="field-group">
+              <label>Color</label>
+              <div class="color-input-wrap">
+                <input type="color" id="fontColor" value="#000000" />
+                <input type="text" id="fontColorHex" value="#000000" placeholder="#hex" maxlength="7" />
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Style &amp; Formatting</label>
+            <div class="segmented-control">
+              <button class="segment-btn" id="boldBtn" type="button" title="Bold"><b>B</b></button>
+              <button class="segment-btn" id="italicBtn" type="button" title="Italic"><i>I</i></button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Alignment</label>
+            <div class="segmented-control">
+              <button class="segment-btn align-btn" data-align="left" type="button" title="Align Left">⫷</button>
+              <button class="segment-btn align-btn active" data-align="center" type="button"
+                title="Align Center">☰</button>
+              <button class="segment-btn align-btn" data-align="right" type="button" title="Align Right">⫸</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Text Transform</label>
+            <div class="segmented-control">
+              <button class="segment-btn transform-btn active" data-transform="none" type="button"
+                title="Normal">Aa</button>
+              <button class="segment-btn transform-btn" data-transform="uppercase" type="button"
+                title="UPPERCASE">AA</button>
+              <button class="segment-btn transform-btn" data-transform="titlecase" type="button"
+                title="Title Case">Ab</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text Shadow Controls -->
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Text Shadow</h3>
+            <label class="switch-toggle">
+              <input type="checkbox" id="shadowEnabled" />
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <div id="shadowControls" class="shadow-controls">
+            <div class="row-2col">
+              <div class="field-group">
+                <label>Shadow Color</label>
+                <div class="color-input-wrap">
+                  <input type="color" id="shadowColor" value="#000000" />
+                  <input type="text" id="shadowColorHex" value="#000000" maxlength="7" />
+                </div>
+              </div>
+              <div class="field-group">
+                <label>Blur Radius</label>
+                <input type="number" id="shadowBlur" value="6" min="0" max="60" />
+              </div>
+            </div>
+            <div class="row-2col">
+              <div class="field-group">
+                <label>Offset X</label>
+                <input type="number" id="shadowOffsetX" value="2" min="-40" max="40" />
+              </div>
+              <div class="field-group">
+                <label>Offset Y</label>
+                <input type="number" id="shadowOffsetY" value="3" min="-40" max="40" />
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="label-with-val">
+                <label>Shadow Opacity</label>
+                <span id="shadowOpacityVal">60%</span>
+              </div>
+              <input type="range" id="shadowOpacity" min="0" max="100" value="60" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Field Position & Nudge -->
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Position &amp; Actions</h3>
+            <div class="pos-badges">
+              <span class="pos-tag" id="posX">X: —</span>
+              <span class="pos-tag" id="posY">Y: —</span>
+            </div>
+          </div>
+
+          <div class="nudge-controls">
+            <button type="button" class="btn-nudge" id="btnNudgeUp" title="Nudge Up (Up Arrow)">▲</button>
+            <div class="nudge-mid-row">
+              <button type="button" class="btn-nudge" id="btnNudgeLeft" title="Nudge Left (Left Arrow)">◀</button>
+              <button type="button" class="btn-nudge btn-nudge-center" id="btnCenterField"
+                title="Center Field Horizontally">Center</button>
+              <button type="button" class="btn-nudge" id="btnNudgeRight" title="Nudge Right (Right Arrow)">▶</button>
+            </div>
+            <button type="button" class="btn-nudge" id="btnNudgeDown" title="Nudge Down (Down Arrow)">▼</button>
+          </div>
+
+          <button class="btn-danger-outline" id="btnRemoveField" type="button" style="display:none">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+            </svg>
+            <span>Remove Selected Field</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── TAB 3: TEMPLATES & BRANDING ─────────────────── -->
+      <div class="tab-content" id="tab-templates">
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Built-in Luxury Template</h3>
+            <span class="hint-pill">default</span>
+          </div>
+          <div class="template-grid">
+            <button type="button" class="template-card active" data-template="vg-luxury" id="btnSelectTplLuxury">
+              <div class="template-thumb thumb-luxury">
+                <span class="thumb-badge">2000×1414</span>
+              </div>
+              <span class="template-name">VG DEMO Certificate</span>
             </button>
-            <div class="font-dropdown" id="fontDropdown"></div>
           </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Upload Template</h3>
+          </div>
+          <div class="upload-dropzone" id="tplUploadDropzone">
+            <input type="file" id="certFileInput" accept="image/png,image/jpeg,image/webp,image/jpg" />
+            <div class="upload-inner">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <div class="upload-title" id="tplUploadLabel">Drop Template Image or Browse</div>
+              <div class="upload-hint">PNG, JPG, WebP (Saved on device)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saved On-Device User Templates -->
+        <div class="sidebar-section" id="customTemplatesSection">
+          <div class="section-header">
+            <h3>Saved Templates</h3>
+            <span class="hint-pill" id="customTemplatesCount">0 saved</span>
+          </div>
+          <div class="template-grid" id="customTemplatesGrid">
+            <p class="field-hint" id="noCustomTplHint">No custom templates saved yet. Upload a certificate background
+              above to store it on your device.</p>
+          </div>
+        </div>
+
+        <!-- 100% On-Device Privacy & Security Guarantee -->
+        <div class="sidebar-section">
+          <div class="security-card">
+            <div class="security-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>100% On-Device Privacy</span>
+            </div>
+            <p>All recipient data, uploaded templates, and generated certificates are stored and processed exclusively
+              in your device's browser memory. Zero data is sent to or stored on external servers.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 4: BULK MAILER & SMTP ──────────────────── -->
+      <div class="tab-content" id="tab-email">
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>SMTP Configuration</h3>
+            <button class="btn-text-action" id="btnConfigSmtpSidebar" type="button">Edit SMTP</button>
+          </div>
+          <div class="smtp-overview-card" id="smtpOverviewCard">
+            <div class="smtp-overview-row">
+              <span class="smtp-lbl">Server Host:</span>
+              <span class="smtp-val" id="smtpHostVal">smtp.gmail.com:587</span>
+            </div>
+            <div class="smtp-overview-row">
+              <span class="smtp-lbl">Sender User:</span>
+              <span class="smtp-val" id="smtpUserVal">Not configured</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Email Template</h3>
+            <button class="btn-text-action" id="btnOpenComposeSidebar" type="button">Open Editor</button>
+          </div>
+          <div class="field-group">
+            <label>Subject Line Preview</label>
+            <div class="subject-preview-box" id="composeSummary">Congratulations on your Certificate, {{firstName}}!
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <button class="btn-primary-action" id="btnSendEmails" type="button" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+            Distribute Certificates by Email
+          </button>
+
+          <div class="progress-wrap" id="emailProgressWrap">
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="emailProgressFill"></div>
+            </div>
+            <div class="progress-label" id="emailProgressLbl">Sending…</div>
+          </div>
+
+          <div id="emailResultLog" class="email-log" style="display:none"></div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ── Center Canvas Studio Stage (Fixed HUD + Scrollable Workspace) ── -->
+    <div class="studio-canvas-stage">
+
+      <!-- Floating Top Canvas Control HUD (Permanently Fixed in View) -->
+      <div class="canvas-floating-hud">
+
+        <!-- Recipient Stepper -->
+        <div class="hud-recipient-stepper" id="hudRecipientStepper">
+          <button class="hud-btn-step" id="btnPrevRecipient" type="button" title="Previous Recipient ([)">❮</button>
+          <div class="hud-recipient-label" id="rowIndicatorLabel">Recipient 1 of 1</div>
+          <button class="hud-btn-step" id="btnNextRecipient" type="button" title="Next Recipient (])">❯</button>
+          <button class="hud-btn-reset" id="btnResetRowOverride" type="button"
+            title="Reset custom typography for this recipient">Reset</button>
+        </div>
+
+        <!-- Quick Canvas Actions -->
+        <div class="hud-action-group">
+          <button class="hud-tool-btn" id="btnAddFieldDirect" type="button" title="Add Custom Text Field">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span>Text</span>
+          </button>
+          <button class="hud-tool-btn" id="btnUndo" type="button" title="Undo (Ctrl+Z)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 7v6h6" />
+              <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13" />
+            </svg>
+          </button>
+          <button class="hud-tool-btn" id="btnRedo" type="button" title="Redo (Ctrl+Y)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 7v6h-6" />
+              <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3L21 13" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Fluid Zoom HUD -->
+        <div class="hud-zoom-group">
+          <button class="hud-zoom-btn" id="zoomOut" type="button" title="Zoom Out (Scroll Down)">−</button>
+          <div class="hud-zoom-level" id="zoomLbl" title="Click to toggle Fit / 100%">65%</div>
+          <button class="hud-zoom-btn" id="zoomIn" type="button" title="Zoom In (Scroll Up)">+</button>
+          <button class="hud-zoom-btn text-btn" id="zoomFit" type="button" title="Fit to Screen">Fit</button>
+          <button class="hud-zoom-btn text-btn" id="zoom100" type="button" title="100% Actual Resolution">1:1</button>
+        </div>
+
+      </div>
+
+      <!-- Active Certificate Canvas Container (Scrollable & Pannable Viewport) -->
+      <main class="studio-canvas-workspace" id="canvasWrap">
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="previewCanvas"></canvas>
+        </div>
+      </main>
+
+      <!-- Batch ZIP Progress Bar (Modal/Floating) -->
+      <div class="bulk-progress-modal" id="progressWrap">
+        <div class="bulk-progress-box">
+          <div class="bulk-progress-title">Generating High-Resolution Certificates…</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-label" id="progressLbl">Processing…</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Toast Notifications -->
+  <div id="toast"></div>
+
+  <!-- ── SMTP Configuration Modal ─────────────────────── -->
+  <div class="modal-overlay" id="smtpModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="smtpModalTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="smtpModalTitle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14" />
+          </svg>
+          SMTP Configuration
+        </div>
+        <button class="modal-close" id="smtpModalClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label class="field-header-label">Quick Provider Presets</label>
+        <div class="smtp-preset-grid">
+          <button type="button" class="smtp-preset-btn active" data-preset="gmail">Gmail</button>
+          <button type="button" class="smtp-preset-btn" data-preset="outlook">Outlook</button>
+          <button type="button" class="smtp-preset-btn" data-preset="yahoo">Yahoo</button>
+          <button type="button" class="smtp-preset-btn" data-preset="custom">Custom</button>
         </div>
 
         <div class="row-2col">
           <div class="field-group">
-            <label>Size (px)</label>
-            <input type="number" id="fontSize" value="82" min="8" max="2500" step="1" />
+            <label>SMTP Host</label>
+            <input type="text" id="smtpHost" placeholder="smtp.gmail.com" value="smtp.gmail.com" autocomplete="off" />
           </div>
-          <div class="field-group">
-            <label>Color</label>
-            <div class="color-input-wrap">
-              <input type="color" id="fontColor" value="#000000" />
-              <input type="text" id="fontColorHex" value="#000000" placeholder="#hex" maxlength="7" />
-            </div>
+          <div class="field-group" style="max-width:100px">
+            <label>Port</label>
+            <input type="number" id="smtpPort" value="587" min="1" max="65535" />
           </div>
-        </div>
-
-        <div class="field-group">
-          <label>Style &amp; Formatting</label>
-          <div class="segmented-control">
-            <button class="segment-btn" id="boldBtn" type="button" title="Bold"><b>B</b></button>
-            <button class="segment-btn" id="italicBtn" type="button" title="Italic"><i>I</i></button>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>Alignment</label>
-          <div class="segmented-control">
-            <button class="segment-btn align-btn" data-align="left" type="button" title="Align Left">⫷</button>
-            <button class="segment-btn align-btn active" data-align="center" type="button" title="Align Center">☰</button>
-            <button class="segment-btn align-btn" data-align="right" type="button" title="Align Right">⫸</button>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>Text Transform</label>
-          <div class="segmented-control">
-            <button class="segment-btn transform-btn active" data-transform="none" type="button" title="Normal">Aa</button>
-            <button class="segment-btn transform-btn" data-transform="uppercase" type="button" title="UPPERCASE">AA</button>
-            <button class="segment-btn transform-btn" data-transform="titlecase" type="button" title="Title Case">Ab</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Text Shadow Controls -->
-      <div class="sidebar-section">
-        <div class="section-header">
-          <h3>Text Shadow</h3>
-          <label class="switch-toggle">
-            <input type="checkbox" id="shadowEnabled" />
-            <span class="switch-slider"></span>
-          </label>
-        </div>
-
-        <div id="shadowControls" class="shadow-controls">
-          <div class="row-2col">
-            <div class="field-group">
-              <label>Shadow Color</label>
-              <div class="color-input-wrap">
-                <input type="color" id="shadowColor" value="#000000" />
-                <input type="text" id="shadowColorHex" value="#000000" maxlength="7" />
-              </div>
-            </div>
-            <div class="field-group">
-              <label>Blur Radius</label>
-              <input type="number" id="shadowBlur" value="6" min="0" max="60" />
-            </div>
-          </div>
-          <div class="row-2col">
-            <div class="field-group">
-              <label>Offset X</label>
-              <input type="number" id="shadowOffsetX" value="2" min="-40" max="40" />
-            </div>
-            <div class="field-group">
-              <label>Offset Y</label>
-              <input type="number" id="shadowOffsetY" value="3" min="-40" max="40" />
-            </div>
-          </div>
-          <div class="field-group">
-            <div class="label-with-val">
-              <label>Shadow Opacity</label>
-              <span id="shadowOpacityVal">60%</span>
-            </div>
-            <input type="range" id="shadowOpacity" min="0" max="100" value="60" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Field Position & Nudge -->
-      <div class="sidebar-section">
-        <div class="section-header">
-          <h3>Position &amp; Actions</h3>
-          <div class="pos-badges">
-            <span class="pos-tag" id="posX">X: —</span>
-            <span class="pos-tag" id="posY">Y: —</span>
-          </div>
-        </div>
-
-        <div class="nudge-controls">
-          <button type="button" class="btn-nudge" id="btnNudgeUp" title="Nudge Up (Up Arrow)">▲</button>
-          <div class="nudge-mid-row">
-            <button type="button" class="btn-nudge" id="btnNudgeLeft" title="Nudge Left (Left Arrow)">◀</button>
-            <button type="button" class="btn-nudge btn-nudge-center" id="btnCenterField" title="Center Field Horizontally">Center</button>
-            <button type="button" class="btn-nudge" id="btnNudgeRight" title="Nudge Right (Right Arrow)">▶</button>
-          </div>
-          <button type="button" class="btn-nudge" id="btnNudgeDown" title="Nudge Down (Down Arrow)">▼</button>
-        </div>
-
-        <button class="btn-danger-outline" id="btnRemoveField" type="button" style="display:none">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
-          <span>Remove Selected Field</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- ── TAB 3: TEMPLATES & BRANDING ─────────────────── -->
-    <div class="tab-content" id="tab-templates">
-      <div class="sidebar-section">
-        <div class="section-header">
-          <h3>Built-in Luxury Template</h3>
-          <span class="hint-pill">default</span>
-        </div>
-        <div class="template-grid">
-          <button type="button" class="template-card active" data-template="vg-luxury" id="btnSelectTplLuxury">
-            <div class="template-thumb thumb-luxury">
-              <span class="thumb-badge">2000×1414</span>
-            </div>
-            <span class="template-name">VG Luxury Monochrome</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="section-header">
-          <h3>Upload Template</h3>
-        </div>
-        <div class="upload-dropzone" id="tplUploadDropzone">
-          <input type="file" id="certFileInput" accept="image/png,image/jpeg,image/webp,image/jpg" />
-          <div class="upload-inner">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <div class="upload-title" id="tplUploadLabel">Drop Template Image or Browse</div>
-            <div class="upload-hint">PNG, JPG, WebP (Saved on device)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Saved On-Device User Templates -->
-      <div class="sidebar-section" id="customTemplatesSection">
-        <div class="section-header">
-          <h3>Saved Templates</h3>
-          <span class="hint-pill" id="customTemplatesCount">0 saved</span>
-        </div>
-        <div class="template-grid" id="customTemplatesGrid">
-          <p class="field-hint" id="noCustomTplHint">No custom templates saved yet. Upload a certificate background above to store it on your device.</p>
-        </div>
-      </div>
-
-      <!-- 100% On-Device Privacy & Security Guarantee -->
-      <div class="sidebar-section">
-        <div class="security-card">
-          <div class="security-header">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span>100% On-Device Privacy</span>
-          </div>
-          <p>All recipient data, uploaded templates, and generated certificates are stored and processed exclusively in your device's browser memory. Zero data is sent to or stored on external servers.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── TAB 4: BULK MAILER & SMTP ──────────────────── -->
-    <div class="tab-content" id="tab-email">
-      <div class="sidebar-section">
-        <div class="section-header">
-          <h3>SMTP Configuration</h3>
-          <button class="btn-text-action" id="btnConfigSmtpSidebar" type="button">Edit SMTP</button>
-        </div>
-        <div class="smtp-overview-card" id="smtpOverviewCard">
-          <div class="smtp-overview-row">
-            <span class="smtp-lbl">Server Host:</span>
-            <span class="smtp-val" id="smtpHostVal">smtp.gmail.com:587</span>
-          </div>
-          <div class="smtp-overview-row">
-            <span class="smtp-lbl">Sender User:</span>
-            <span class="smtp-val" id="smtpUserVal">Not configured</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="section-header">
-          <h3>Email Template</h3>
-          <button class="btn-text-action" id="btnOpenComposeSidebar" type="button">Open Editor</button>
         </div>
         <div class="field-group">
-          <label>Subject Line Preview</label>
-          <div class="subject-preview-box" id="composeSummary">Congratulations on your Certificate, {{firstName}}!</div>
+          <label>Username / Email Address</label>
+          <input type="email" id="smtpUser" placeholder="you@gmail.com" autocomplete="off" />
         </div>
-      </div>
-
-      <div class="sidebar-section">
-        <button class="btn-primary-action" id="btnSendEmails" type="button" disabled>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          Distribute Certificates by Email
-        </button>
-
-        <div class="progress-wrap" id="emailProgressWrap">
-          <div class="progress-bar-track">
-            <div class="progress-bar-fill" id="emailProgressFill"></div>
-          </div>
-          <div class="progress-label" id="emailProgressLbl">Sending…</div>
-        </div>
-
-        <div id="emailResultLog" class="email-log" style="display:none"></div>
-      </div>
-    </div>
-
-  </aside>
-
-  <!-- ── Center Canvas Studio Workspace ──────────────── -->
-  <main class="studio-canvas-workspace" id="canvasWrap">
-
-    <!-- Floating Top Canvas Control HUD -->
-    <div class="canvas-floating-hud">
-      
-      <!-- Recipient Stepper -->
-      <div class="hud-recipient-stepper" id="hudRecipientStepper">
-        <button class="hud-btn-step" id="btnPrevRecipient" type="button" title="Previous Recipient ([)">❮</button>
-        <div class="hud-recipient-label" id="rowIndicatorLabel">Recipient 1 of 1</div>
-        <button class="hud-btn-step" id="btnNextRecipient" type="button" title="Next Recipient (])">❯</button>
-        <button class="hud-btn-reset" id="btnResetRowOverride" type="button" title="Reset custom typography for this recipient">Reset</button>
-      </div>
-
-      <!-- Quick Canvas Actions -->
-      <div class="hud-action-group">
-        <button class="hud-tool-btn" id="btnAddFieldDirect" type="button" title="Add Custom Text Field">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span>Text</span>
-        </button>
-        <button class="hud-tool-btn" id="btnUndo" type="button" title="Undo (Ctrl+Z)">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
-        </button>
-        <button class="hud-tool-btn" id="btnRedo" type="button" title="Redo (Ctrl+Y)">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3L21 13"/></svg>
-        </button>
-      </div>
-
-      <!-- Fluid Zoom HUD -->
-      <div class="hud-zoom-group">
-        <button class="hud-zoom-btn" id="zoomOut" type="button" title="Zoom Out (Scroll Down)">−</button>
-        <div class="hud-zoom-level" id="zoomLbl" title="Click to toggle Fit / 100%">65%</div>
-        <button class="hud-zoom-btn" id="zoomIn" type="button" title="Zoom In (Scroll Up)">+</button>
-        <button class="hud-zoom-btn text-btn" id="zoomFit" type="button" title="Fit to Screen">Fit</button>
-        <button class="hud-zoom-btn text-btn" id="zoom100" type="button" title="100% Actual Resolution">1:1</button>
-      </div>
-
-    </div>
-
-    <!-- Active Certificate Canvas Container -->
-    <div class="canvas-container" id="canvasContainer">
-      <canvas id="previewCanvas"></canvas>
-    </div>
-
-    <!-- Batch ZIP Progress Bar (Modal/Floating) -->
-    <div class="bulk-progress-modal" id="progressWrap">
-      <div class="bulk-progress-box">
-        <div class="bulk-progress-title">Generating High-Resolution Certificates…</div>
-        <div class="progress-bar-track">
-          <div class="progress-bar-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-label" id="progressLbl">Processing…</div>
-      </div>
-    </div>
-
-  </main>
-
-</div>
-
-<!-- Toast Notifications -->
-<div id="toast"></div>
-
-<!-- ── SMTP Configuration Modal ─────────────────────── -->
-<div class="modal-overlay" id="smtpModal" aria-hidden="true">
-  <div class="modal" role="dialog" aria-labelledby="smtpModalTitle">
-    <div class="modal-header">
-      <div class="modal-title" id="smtpModalTitle">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
-        SMTP Configuration
-      </div>
-      <button class="modal-close" id="smtpModalClose" aria-label="Close">&times;</button>
-    </div>
-    <div class="modal-body">
-      <label class="field-header-label">Quick Provider Presets</label>
-      <div class="smtp-preset-grid">
-        <button type="button" class="smtp-preset-btn active" data-preset="gmail">Gmail</button>
-        <button type="button" class="smtp-preset-btn" data-preset="outlook">Outlook</button>
-        <button type="button" class="smtp-preset-btn" data-preset="yahoo">Yahoo</button>
-        <button type="button" class="smtp-preset-btn" data-preset="custom">Custom</button>
-      </div>
-
-      <div class="row-2col">
         <div class="field-group">
-          <label>SMTP Host</label>
-          <input type="text" id="smtpHost" placeholder="smtp.gmail.com" value="smtp.gmail.com" autocomplete="off" />
+          <label>Password / App Password (use 16-character App Password for Gmail)</label>
+          <input type="password" id="smtpPass" placeholder="••••••••••••••••" autocomplete="new-password" />
         </div>
-        <div class="field-group" style="max-width:100px">
-          <label>Port</label>
-          <input type="number" id="smtpPort" value="587" min="1" max="65535" />
+        <div class="field-group">
+          <label>Sender Display Name</label>
+          <input type="text" id="smtpFromName" placeholder="VG Certificate Authority" value="VG Certificate Authority"
+            autocomplete="off" />
         </div>
+        <div id="smtpTestResult" class="smtp-test-result" style="display:none"></div>
       </div>
-      <div class="field-group">
-        <label>Username / Email Address</label>
-        <input type="email" id="smtpUser" placeholder="you@gmail.com" autocomplete="off" />
+      <div class="modal-footer">
+        <button class="btn btn-test" id="btnTestSmtp" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          Test Connection
+        </button>
+        <button class="btn btn-primary" id="btnSaveSmtp" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          Save Settings
+        </button>
       </div>
-      <div class="field-group">
-        <label>Password / App Password (use 16-character App Password for Gmail)</label>
-        <input type="password" id="smtpPass" placeholder="••••••••••••••••" autocomplete="new-password" />
-      </div>
-      <div class="field-group">
-        <label>Sender Display Name</label>
-        <input type="text" id="smtpFromName" placeholder="VG Certificate Authority" value="VG Certificate Authority" autocomplete="off" />
-      </div>
-      <div id="smtpTestResult" class="smtp-test-result" style="display:none"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-test" id="btnTestSmtp" type="button">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Test Connection
-      </button>
-      <button class="btn btn-primary" id="btnSaveSmtp" type="button">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        Save Settings
-      </button>
     </div>
   </div>
-</div>
 
-<!-- ── Email Compose Modal ──────────────────────────── -->
-<div class="modal-overlay" id="emailModal" aria-hidden="true">
-  <div class="modal modal-wide" role="dialog" aria-labelledby="emailModalTitle">
-    <div class="modal-header">
-      <div class="modal-title" id="emailModalTitle">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        Compose Email Template
+  <!-- ── Email Compose Modal ──────────────────────────── -->
+  <div class="modal-overlay" id="emailModal" aria-hidden="true">
+    <div class="modal modal-wide" role="dialog" aria-labelledby="emailModalTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="emailModalTitle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+          Compose Email Template
+        </div>
+        <button class="modal-close" id="emailModalClose" aria-label="Close">&times;</button>
       </div>
-      <button class="modal-close" id="emailModalClose" aria-label="Close">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="field-group">
-        <label>Subject Line</label>
-        <input type="text" id="emailSubject" placeholder="Congratulations on your Certificate, {{firstName}}!" value="Congratulations on your Certificate, {{firstName}}!" />
-      </div>
-      <div class="field-group">
-        <label>Dynamic Recipient Variables — click to insert at cursor</label>
-        <div class="var-chips" id="varChips">
-          <span class="var-chip-hint">Upload an Excel file or load sample data to see column variables</span>
+      <div class="modal-body">
+        <div class="field-group">
+          <label>Subject Line</label>
+          <input type="text" id="emailSubject" placeholder="Congratulations on your Certificate, {{firstName}}!"
+            value="Congratulations on your Certificate, {{firstName}}!" />
+        </div>
+        <div class="field-group">
+          <label>Dynamic Recipient Variables — click to insert at cursor</label>
+          <div class="var-chips" id="varChips">
+            <span class="var-chip-hint">Upload an Excel file or load sample data to see column variables</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Email Body</label>
+          <div class="rich-toolbar" id="richToolbar">
+            <button type="button" class="rich-btn" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+            <button type="button" class="rich-btn" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+            <button type="button" class="rich-btn" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+            <div class="rich-divider"></div>
+            <button type="button" class="rich-btn" id="btnInsertLink" title="Insert Link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+              </svg>
+              Link
+            </button>
+            <div class="rich-divider"></div>
+            <button type="button" class="rich-btn rich-btn-text" id="btnSaveTemplate"
+              title="Save current email as a reusable template">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>Save
+            </button>
+            <select id="templateSelect" class="template-select" title="Load a saved template">
+              <option value="">Load Template…</option>
+            </select>
+          </div>
+          <div id="emailBody" class="email-body-editor" contenteditable="true"
+            data-placeholder="Hi {{firstName}},&#10;&#10;Congratulations! Please find your official certificate attached.&#10;&#10;Best regards,&#10;VG Certificate Authority">
+          </div>
+          <div class="field-hint">Variables are replaced per recipient automatically. <b>{{firstName}}</b> is computed
+            from the name column.</div>
         </div>
       </div>
-      <div class="field-group">
-        <label>Email Body</label>
-        <div class="rich-toolbar" id="richToolbar">
-          <button type="button" class="rich-btn" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
-          <button type="button" class="rich-btn" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
-          <button type="button" class="rich-btn" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
-          <div class="rich-divider"></div>
-          <button type="button" class="rich-btn" id="btnInsertLink" title="Insert Link">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-            Link
-          </button>
-          <div class="rich-divider"></div>
-          <button type="button" class="rich-btn rich-btn-text" id="btnSaveTemplate" title="Save current email as a reusable template">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save
-          </button>
-          <select id="templateSelect" class="template-select" title="Load a saved template">
-            <option value="">Load Template…</option>
-          </select>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="emailModalDone" type="button">Save &amp; Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Keyboard Shortcuts Modal ─────────────────────── -->
+  <div class="modal-overlay" id="shortcutsModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="shortcutsModalTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="shortcutsModalTitle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10" />
+          </svg>
+          Studio Keyboard Shortcuts
         </div>
-        <div id="emailBody" class="email-body-editor" contenteditable="true"
-          data-placeholder="Hi {{firstName}},&#10;&#10;Congratulations! Please find your official certificate attached.&#10;&#10;Best regards,&#10;VG Certificate Authority"></div>
-        <div class="field-hint">Variables are replaced per recipient automatically. <b>{{firstName}}</b> is computed from the name column.</div>
+        <button class="modal-close" id="shortcutsModalClose" aria-label="Close">&times;</button>
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" id="emailModalDone" type="button">Save &amp; Close</button>
+      <div class="modal-body">
+        <div class="shortcuts-grid">
+          <div class="shortcut-row"><span class="shortcut-desc">Zoom In / Out</span><kbd>Mouse Wheel</kbd></div>
+          <div class="shortcut-row"><span class="shortcut-desc">Pan Viewport</span><kbd>Space + Drag</kbd></div>
+          <div class="shortcut-row"><span class="shortcut-desc">Nudge Selected Field (1px)</span><kbd>Arrow Keys</kbd>
+          </div>
+          <div class="shortcut-row"><span class="shortcut-desc">Nudge Selected Field (10px)</span><kbd>Shift +
+              Arrow</kbd></div>
+          <div class="shortcut-row"><span class="shortcut-desc">Delete Selected Field</span><kbd>Del</kbd> /
+            <kbd>Backspace</kbd></div>
+          <div class="shortcut-row"><span class="shortcut-desc">Undo Action</span><kbd>Ctrl + Z</kbd></div>
+          <div class="shortcut-row"><span class="shortcut-desc">Redo Action</span><kbd>Ctrl + Y</kbd></div>
+          <div class="shortcut-row"><span class="shortcut-desc">Previous Recipient</span><kbd>[</kbd></div>
+          <div class="shortcut-row"><span class="shortcut-desc">Next Recipient</span><kbd>]</kbd></div>
+          <div class="shortcut-row"><span class="shortcut-desc">Show Shortcuts Guide</span><kbd>?</kbd></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="shortcutsModalDone" type="button">Got It</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ── Keyboard Shortcuts Modal ─────────────────────── -->
-<div class="modal-overlay" id="shortcutsModal" aria-hidden="true">
-  <div class="modal" role="dialog" aria-labelledby="shortcutsModalTitle">
-    <div class="modal-header">
-      <div class="modal-title" id="shortcutsModalTitle">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
-        Studio Keyboard Shortcuts
-      </div>
-      <button class="modal-close" id="shortcutsModalClose" aria-label="Close">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="shortcuts-grid">
-        <div class="shortcut-row"><span class="shortcut-desc">Zoom In / Out</span><kbd>Mouse Wheel</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Pan Viewport</span><kbd>Space + Drag</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Nudge Selected Field (1px)</span><kbd>Arrow Keys</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Nudge Selected Field (10px)</span><kbd>Shift + Arrow</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Delete Selected Field</span><kbd>Del</kbd> / <kbd>Backspace</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Undo Action</span><kbd>Ctrl + Z</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Redo Action</span><kbd>Ctrl + Y</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Previous Recipient</span><kbd>[</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Next Recipient</span><kbd>]</kbd></div>
-        <div class="shortcut-row"><span class="shortcut-desc">Show Shortcuts Guide</span><kbd>?</kbd></div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" id="shortcutsModalDone" type="button">Got It</button>
-    </div>
-  </div>
-</div>
-
-<!-- Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="js/app.js"></script>
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="js/app.js"></script>
 </body>
+
 </html>
