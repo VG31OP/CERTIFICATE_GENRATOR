@@ -811,22 +811,6 @@
     toast('Field centered horizontally', 'success');
   });
 
-  const btnAutoFontSize = document.getElementById('btnAutoFontSize');
-  if (btnAutoFontSize) {
-    btnAutoFontSize.addEventListener('click', () => {
-      if (state.activeFieldIdx < 0) {
-        toast('Select a field on the certificate first', 'warning');
-        return;
-      }
-      saveHistory();
-      const baseField = state.fields[state.activeFieldIdx];
-      const optimalSize = getAutoFontSizeForField(baseField.key);
-      fontSize.value = optimalSize;
-      onTypographyChange();
-      toast(`Auto font size computed: ${optimalSize}px`, 'success');
-    });
-  }
-
   // Keyboard Shortcuts
   window.addEventListener('keydown', e => {
     if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) return;
@@ -1265,21 +1249,14 @@
   }
 
   // Template switchers
-  document.getElementById('btnSelectTplLuxury').addEventListener('click', () => {
-    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
-    document.getElementById('btnSelectTplLuxury').classList.add('active');
-    generateTemplateCanvas('vg-luxury', () => toast('VG Luxury Monochrome loaded', 'success'));
-  });
-  document.getElementById('btnSelectTplPlatinum').addEventListener('click', () => {
-    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
-    document.getElementById('btnSelectTplPlatinum').classList.add('active');
-    generateTemplateCanvas('vg-platinum', () => toast('Minimalist Platinum loaded', 'success'));
-  });
-  document.getElementById('btnSelectTplHonors').addEventListener('click', () => {
-    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
-    document.getElementById('btnSelectTplHonors').classList.add('active');
-    generateTemplateCanvas('vg-honors', () => toast('Academic Honors loaded', 'success'));
-  });
+  const btnSelectTplLuxury = document.getElementById('btnSelectTplLuxury');
+  if (btnSelectTplLuxury) {
+    btnSelectTplLuxury.addEventListener('click', () => {
+      document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+      btnSelectTplLuxury.classList.add('active');
+      generateTemplateCanvas('vg-luxury', () => toast('VG Luxury Monochrome loaded', 'success'));
+    });
+  }
 
   btnUploadCustomTpl.addEventListener('click', () => certFileInput.click());
   certFileInput.addEventListener('change', () => {
