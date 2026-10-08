@@ -107,6 +107,8 @@
   const canvasEmptyState = document.getElementById('canvasEmptyState');
   const btnEmptyLoadBuiltin = document.getElementById('btnEmptyLoadBuiltin');
   const btnEmptyUpload = document.getElementById('btnEmptyUpload');
+  const customTextInputGroup = document.getElementById('customTextInputGroup');
+  const customTextInput = document.getElementById('customTextInput');
 
   // Typography controls
   const fontSize = document.getElementById('fontSize');
@@ -449,7 +451,7 @@
   }
 
   // ── Field Management ───────────────────────────────────────────────
-  function addField(key, x, y, customTypo = null) {
+  function addField(key, x, y, customTypo = null, customValue = null, isCustomText = false) {
     saveHistory();
     const autoSize = getAutoFontSizeForField(key);
     const baseTypo = readTypographyFromControls();
@@ -457,7 +459,15 @@
       ...baseTypo,
       size: autoSize,
     };
-    state.fields.push({ key, x, y, ...t, _bbox: null });
+    state.fields.push({
+      key,
+      x,
+      y,
+      customValue: customValue !== null ? customValue : (isCustomText ? key : null),
+      isCustomText: !!isCustomText,
+      ...t,
+      _bbox: null,
+    });
     selectField(state.fields.length - 1);
     updateBulkBtn();
   }
@@ -468,16 +478,49 @@
       const baseField = state.fields[idx];
       const effectiveField = getEffectiveField(baseField, state.editingRowIdx);
       writeTypographyToControls(effectiveField);
-      activeFieldLabel.textContent = baseField.key;
+
+      // Check if this is a custom static text field (not an Excel column)
+      const isCustom = !!(baseField.isCustomText || (baseField.customValue !== undefined && baseField.customValue !== null) || (!state.excelColumns.includes(baseField.key) && !state.excelData.some(r => r[baseField.key] !== undefined)));
+
+      if (customTextInputGroup && customTextInput) {
+        if (isCustom) {
+          customTextInputGroup.style.display = 'flex';
+          customTextInput.value = effectiveField.customValue !== undefined && effectiveField.customValue !== null
+            ? effectiveField.customValue
+            : (baseField.customValue !== undefined && baseField.customValue !== null ? baseField.customValue : (effectiveField.text || baseField.key || ''));
+        } else {
+          customTextInputGroup.style.display = 'none';
+        }
+      }
+
+      activeFieldLabel.textContent = isCustom ? (baseField.customValue || baseField.key) : baseField.key;
       activeFieldLabel.classList.add('has-field');
       btnRemoveField.style.display = '';
     } else {
       state.activeFieldIdx = -1;
+      if (customTextInputGroup) customTextInputGroup.style.display = 'none';
       activeFieldLabel.textContent = 'no field selected';
       activeFieldLabel.classList.remove('has-field');
       btnRemoveField.style.display = 'none';
     }
     render();
+  }
+
+  if (customTextInput) {
+    customTextInput.addEventListener('input', () => {
+      if (state.activeFieldIdx < 0) return;
+      const baseField = state.fields[state.activeFieldIdx];
+      const val = customTextInput.value;
+      baseField.customValue = val;
+      baseField.isCustomText = true;
+      if (state.editingRowIdx >= 0) {
+        if (!state.rowOverrides[state.editingRowIdx]) state.rowOverrides[state.editingRowIdx] = {};
+        if (!state.rowOverrides[state.editingRowIdx][baseField.key]) state.rowOverrides[state.editingRowIdx][baseField.key] = {};
+        state.rowOverrides[state.editingRowIdx][baseField.key].customValue = val;
+      }
+      activeFieldLabel.textContent = val || 'Custom Text';
+      render();
+    });
   }
 
   btnRemoveField.addEventListener('click', () => {
@@ -496,10 +539,23 @@
   });
 
   btnAddFieldDirect.addEventListener('click', () => {
-    const customName = prompt('Enter custom field label (e.g. title, grade, honors):', 'custom_text');
-    if (!customName || !customName.trim()) return;
-    addField(customName.trim(), 0.50, 0.50);
-    toast(`Field "${customName.trim()}" added to center!`, 'success');
+    if (!state.image) {
+      const luxuryBtn = document.getElementById('btnSelectTplLuxury');
+      if (luxuryBtn) luxuryBtn.click();
+    }
+    const defaultText = 'Certificate of Achievement';
+    const uniqueKey = 'custom_' + Date.now();
+    addField(uniqueKey, 0.50, 0.50, null, defaultText, true);
+
+    // Switch to Style tab to show custom text input immediately
+    const tabStyle = document.getElementById('tabBtnTypography');
+    if (tabStyle) tabStyle.click();
+
+    if (customTextInput) {
+      customTextInput.focus();
+      customTextInput.select();
+    }
+    toast('Custom text added! Type text in sidebar', 'success');
   });
 
   function updateBulkBtn() {
@@ -582,7 +638,16 @@
     for (let i = 0; i < state.fields.length; i++) {
       const baseField = state.fields[i];
       const field = getEffectiveField(baseField, state.previewRowIdx);
-      const value = previewRow ? (previewRow[field.key] || `[${field.key}]`) : `[${field.key}]`;
+      let value = '';
+      if (previewRow && previewRow[field.key] !== undefined && previewRow[field.key] !== '') {
+        value = previewRow[field.key];
+      } else if (field.customValue !== undefined && field.customValue !== null) {
+        value = field.customValue;
+      } else if (field.isCustomText) {
+        value = field.key;
+      } else {
+        value = `[${field.key}]`;
+      }
       const x = field.x * w;
       const y = field.y * h;
 
@@ -1628,9 +1693,16 @@
       oc.fillRect(0, 0, state.naturalW, state.naturalH);
       oc.drawImage(state.image, 0, 0, state.naturalW, state.naturalH);
       for (const baseField of state.fields) {
-        const value = rowData[baseField.key] || '';
-        if (!value) continue;
         const field = getEffectiveField(baseField, rowIdx);
+        let value = '';
+        if (rowData && rowData[baseField.key] !== undefined && rowData[baseField.key] !== '') {
+          value = rowData[baseField.key];
+        } else if (field.customValue !== undefined && field.customValue !== null) {
+          value = field.customValue;
+        } else if (field.isCustomText) {
+          value = field.key;
+        }
+        if (!value) continue;
         drawFieldOnCtx(oc, field, value, field.x * state.naturalW, field.y * state.naturalH);
       }
       off.toBlob(resolve, 'image/png');
