@@ -1820,6 +1820,53 @@
     };
   }
 
+  // ── SMTP Help Guide Controls ───────────────────────────────────────
+  const btnToggleSmtpHelp = document.getElementById('btnToggleSmtpHelp');
+  const btnCloseSmtpHelp = document.getElementById('btnCloseSmtpHelp');
+  const smtpHelpPanel = document.getElementById('smtpHelpPanel');
+  const btnAppPasswordHelp = document.getElementById('btnAppPasswordHelp');
+  const smtpHelpTabs = document.querySelectorAll('.smtp-help-tab');
+
+  function toggleSmtpHelp(forceOpen = null, guideTab = null) {
+    if (!smtpHelpPanel) return;
+    const shouldOpen = forceOpen !== null ? forceOpen : (smtpHelpPanel.style.display === 'none');
+    smtpHelpPanel.style.display = shouldOpen ? 'flex' : 'none';
+    if (btnToggleSmtpHelp) btnToggleSmtpHelp.classList.toggle('active', shouldOpen);
+    if (shouldOpen && guideTab) {
+      switchSmtpHelpTab(guideTab);
+    }
+  }
+
+  function switchSmtpHelpTab(guide) {
+    smtpHelpTabs.forEach(t => t.classList.toggle('active', t.dataset.guide === guide));
+    const guideMap = {
+      gmail: 'helpContentGmail',
+      outlook: 'helpContentOutlook',
+      yahoo: 'helpContentYahoo',
+      custom: 'helpContentCustom',
+    };
+    Object.keys(guideMap).forEach(k => {
+      const el = document.getElementById(guideMap[k]);
+      if (el) el.style.display = (k === guide) ? 'flex' : 'none';
+    });
+  }
+
+  if (btnToggleSmtpHelp) {
+    btnToggleSmtpHelp.addEventListener('click', () => toggleSmtpHelp());
+  }
+  if (btnCloseSmtpHelp) {
+    btnCloseSmtpHelp.addEventListener('click', () => toggleSmtpHelp(false));
+  }
+  if (btnAppPasswordHelp) {
+    btnAppPasswordHelp.addEventListener('click', () => toggleSmtpHelp(true, 'gmail'));
+  }
+
+  smtpHelpTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      switchSmtpHelpTab(tab.dataset.guide);
+    });
+  });
+
   // Preset buttons
   document.querySelectorAll('.smtp-preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1830,6 +1877,10 @@
       else if (preset === 'outlook') { smtpHost.value = 'smtp.office365.com'; smtpPort.value = '587'; }
       else if (preset === 'yahoo') { smtpHost.value = 'smtp.mail.yahoo.com'; smtpPort.value = '587'; }
       else { smtpHost.value = ''; smtpPort.value = '587'; }
+
+      if (smtpHelpPanel && smtpHelpPanel.style.display !== 'none') {
+        switchSmtpHelpTab(preset);
+      }
     });
   });
 

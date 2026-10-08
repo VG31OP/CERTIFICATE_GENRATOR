@@ -593,9 +593,80 @@
           </svg>
           SMTP Configuration
         </div>
-        <button class="modal-close" id="smtpModalClose" aria-label="Close">&times;</button>
+        <div class="modal-header-actions">
+          <button type="button" class="btn-smtp-help-toggle" id="btnToggleSmtpHelp" title="Show setup steps &amp; App Password instructions">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>Setup Help</span>
+          </button>
+          <button class="modal-close" id="smtpModalClose" aria-label="Close">&times;</button>
+        </div>
       </div>
       <div class="modal-body">
+        <!-- SMTP Step-by-Step Setup Guide Accordion -->
+        <div class="smtp-help-panel" id="smtpHelpPanel" style="display:none">
+          <div class="smtp-help-header">
+            <div class="smtp-help-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Step-by-Step Setup Guide</span>
+            </div>
+            <button type="button" class="btn-help-close" id="btnCloseSmtpHelp" aria-label="Close help">&times;</button>
+          </div>
+
+          <div class="smtp-help-tabs">
+            <button type="button" class="smtp-help-tab active" data-guide="gmail">Gmail (Google)</button>
+            <button type="button" class="smtp-help-tab" data-guide="outlook">Outlook / 365</button>
+            <button type="button" class="smtp-help-tab" data-guide="yahoo">Yahoo Mail</button>
+            <button type="button" class="smtp-help-tab" data-guide="custom">Custom Server</button>
+          </div>
+
+          <div class="smtp-help-content" id="helpContentGmail">
+            <div class="help-step-badge">Gmail Configuration (Requires 16-character App Password)</div>
+            <ol class="help-steps-list">
+              <li>Open your <strong>Google Account Security settings</strong> (<a href="https://myaccount.google.com/security" target="_blank" rel="noopener">myaccount.google.com/security</a>).</li>
+              <li>Under <em>"How you sign in to Google"</em>, ensure <strong>2-Step Verification</strong> is enabled.</li>
+              <li>Search for <strong>"App Passwords"</strong> or navigate to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">myaccount.google.com/apppasswords</a>.</li>
+              <li>Generate a new App Password named <code>Certificate Studio</code>.</li>
+              <li>Copy the generated <strong>16-letter password</strong> (e.g. <code>abcd efgh ijkl mnop</code>).</li>
+              <li>Enter your full Gmail in <strong>Username</strong> and paste the 16-character code into the <strong>Password</strong> field below.</li>
+              <li>Host: <code>smtp.gmail.com</code> | Port: <code>587</code>, then click <strong>Test Connection</strong>.</li>
+            </ol>
+            <div class="help-note">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span><strong>Crucial:</strong> Standard Gmail passwords will fail with "Bad Credentials". You must generate an App Password.</span>
+            </div>
+          </div>
+
+          <div class="smtp-help-content" id="helpContentOutlook" style="display:none">
+            <div class="help-step-badge">Outlook / Office 365 Configuration</div>
+            <ol class="help-steps-list">
+              <li>Host: <code>smtp.office365.com</code> | Port: <code>587</code>.</li>
+              <li>Enter your Microsoft account email in <strong>Username</strong>.</li>
+              <li>Enter your account password (or App Password if MFA is enabled on your organization).</li>
+              <li>Click <strong>Test Connection</strong>.</li>
+            </ol>
+          </div>
+
+          <div class="smtp-help-content" id="helpContentYahoo" style="display:none">
+            <div class="help-step-badge">Yahoo Mail Configuration</div>
+            <ol class="help-steps-list">
+              <li>Go to your Yahoo Account Security page and click <strong>"Generate app password"</strong>.</li>
+              <li>Create an app password for <code>Certificate Studio</code>.</li>
+              <li>Host: <code>smtp.mail.yahoo.com</code> | Port: <code>587</code> | Username: your Yahoo email.</li>
+              <li>Paste the generated Yahoo App Password into the Password field.</li>
+            </ol>
+          </div>
+
+          <div class="smtp-help-content" id="helpContentCustom" style="display:none">
+            <div class="help-step-badge">Custom / Enterprise SMTP Server</div>
+            <ol class="help-steps-list">
+              <li>Enter your SMTP server hostname (e.g., <code>mail.yourcompany.com</code> or <code>smtp.sendgrid.net</code>).</li>
+              <li>Use Port <code>587</code> (STARTTLS) or <code>465</code> (SSL).</li>
+              <li>Enter your SMTP authentication username and secret key / password.</li>
+              <li>Click <strong>Test Connection</strong> to verify authorization.</li>
+            </ol>
+          </div>
+        </div>
+
         <label class="field-header-label">Quick Provider Presets</label>
         <div class="smtp-preset-grid">
           <button type="button" class="smtp-preset-btn active" data-preset="gmail">Gmail</button>
@@ -619,8 +690,11 @@
           <input type="email" id="smtpUser" placeholder="you@gmail.com" autocomplete="off" />
         </div>
         <div class="field-group">
-          <label>Password / App Password (use 16-character App Password for Gmail)</label>
-          <input type="password" id="smtpPass" placeholder="••••••••••••••••" autocomplete="new-password" />
+          <div class="label-with-action">
+            <label>Password / App Password</label>
+            <button type="button" class="btn-inline-help" id="btnAppPasswordHelp">Need an App Password?</button>
+          </div>
+          <input type="password" id="smtpPass" placeholder="•••••••••••••••• (16-char App Password)" autocomplete="new-password" />
         </div>
         <div class="field-group">
           <label>Sender Display Name</label>
