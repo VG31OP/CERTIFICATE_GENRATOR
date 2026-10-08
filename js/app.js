@@ -1248,34 +1248,202 @@
     img.src = off.toDataURL('image/png');
   }
 
+  // ── IndexedDB Storage for Custom Templates (100% On-Device) ─────────
+  const DB_NAME = 'VG_CertificateStudio_DB';
+  const DB_VERSION = 1;
+  const STORE_TEMPLATES = 'custom_templates';
+
+  function getDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_TEMPLATES)) {
+          db.createObjectStore(STORE_TEMPLATES, { keyPath: 'id' });
+        }
+      };
+      req.onsuccess = e => resolve(e.target.result);
+      req.onerror = e => reject(e.target.error);
+    });
+  }
+
+  async function saveCustomTemplateToDB(templateObj) {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_TEMPLATES, 'readwrite');
+      const store = tx.objectStore(STORE_TEMPLATES);
+      const req = store.put(templateObj);
+      req.onsuccess = () => resolve(templateObj);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function getAllCustomTemplatesFromDB() {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_TEMPLATES, 'readonly');
+      const store = tx.objectStore(STORE_TEMPLATES);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function deleteCustomTemplateFromDB(id) {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_TEMPLATES, 'readwrite');
+      const store = tx.objectStore(STORE_TEMPLATES);
+      const req = store.delete(id);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  // ── Custom Templates UI Renderer ───────────────────────────────────
+  const customTemplatesSection = document.getElementById('customTemplatesSection');
+  const customTemplatesGrid    = document.getElementById('customTemplatesGrid');
+  const customTemplatesCount   = document.getElementById('customTemplatesCount');
+
+  async function refreshCustomTemplatesList() {
+    try {
+      const templates = await getAllCustomTemplatesFromDB();
+      if (!templates.length) {
+        if (customTemplatesSection) customTemplatesSection.style.display = 'none';
+        return;
+      }
+
+      if (customTemplatesSection) customTemplatesSection.style.display = 'flex';
+      if (customTemplatesCount) customTemplatesCount.textContent = `${templates.length} saved`;
+      if (!customTemplatesGrid) return;
+
+      customTemplatesGrid.innerHTML = '';
+      templates.forEach(tpl => {
+        const card = document.createElement('div');
+        const isActive = state.templateType === `custom-${tpl.id}`;
+        card.className = `custom-template-card${isActive ? ' active' : ''}`;
+        card.dataset.id = tpl.id;
+
+        card.innerHTML = `
+          <div class="template-thumb thumb-custom" style="background-image:url('${tpl.thumbDataUrl || tpl.dataUrl}')">
+            <span class="thumb-badge">${tpl.naturalW}×${tpl.naturalH}</span>
+          </div>
+          <div class="custom-template-info">
+            <span class="template-name">${esc(tpl.name)}</span>
+            <span class="custom-template-meta">${new Date(tpl.createdAt || Date.now()).toLocaleDateString()}</span>
+          </div>
+          <button type="button" class="btn-delete-custom-tpl" title="Delete template from device" aria-label="Delete template">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        `;
+
+        card.addEventListener('click', e => {
+          if (e.target.closest('.btn-delete-custom-tpl')) return;
+          loadCustomTemplateObject(tpl);
+        });
+
+        const delBtn = card.querySelector('.btn-delete-custom-tpl');
+        delBtn.addEventListener('click', async e => {
+          e.stopPropagation();
+          if (confirm(`Delete saved template "${tpl.name}" from your device?`)) {
+            await deleteCustomTemplateFromDB(tpl.id);
+            toast('Template deleted from device', 'success');
+            if (state.templateType === `custom-${tpl.id}`) {
+              document.getElementById('btnSelectTplLuxury')?.click();
+            }
+            refreshCustomTemplatesList();
+          }
+        });
+
+        customTemplatesGrid.appendChild(card);
+      });
+    } catch (err) {
+      console.warn('Failed to load custom templates from IndexedDB', err);
+    }
+  }
+
+  function loadCustomTemplateObject(tpl) {
+    document.querySelectorAll('.template-card, .custom-template-card').forEach(c => c.classList.remove('active'));
+    const matchedCard = customTemplatesGrid?.querySelector(`[data-id="${tpl.id}"]`);
+    if (matchedCard) matchedCard.classList.add('active');
+
+    const img = new Image();
+    img.onload = () => {
+      state.image = img;
+      state.naturalW = tpl.naturalW || img.naturalWidth;
+      state.naturalH = tpl.naturalH || img.naturalHeight;
+      state.templateType = `custom-${tpl.id}`;
+      canvas.width = state.naturalW;
+      canvas.height = state.naturalH;
+      autoFitZoom();
+      render();
+      toast(`Loaded "${tpl.name}" (${state.naturalW}×${state.naturalH}px)`, 'success');
+    };
+    img.src = tpl.dataUrl;
+  }
+
   // Template switchers
   const btnSelectTplLuxury = document.getElementById('btnSelectTplLuxury');
   if (btnSelectTplLuxury) {
     btnSelectTplLuxury.addEventListener('click', () => {
-      document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.template-card, .custom-template-card').forEach(c => c.classList.remove('active'));
       btnSelectTplLuxury.classList.add('active');
       generateTemplateCanvas('vg-luxury', () => toast('VG Luxury Monochrome loaded', 'success'));
     });
   }
 
+  // Upload and persist custom template to on-device IndexedDB
   btnUploadCustomTpl.addEventListener('click', () => certFileInput.click());
   certFileInput.addEventListener('change', () => {
     if (certFileInput.files[0]) {
       const file = certFileInput.files[0];
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        state.image = img;
-        state.naturalW = img.naturalWidth;
-        state.naturalH = img.naturalHeight;
-        canvas.width = state.naturalW;
-        canvas.height = state.naturalH;
-        autoFitZoom();
-        render();
-        URL.revokeObjectURL(url);
-        toast(`Custom template loaded (${state.naturalW}×${state.naturalH}px)`, 'success');
+      const reader = new FileReader();
+      reader.onload = e => {
+        const fullDataUrl = e.target.result;
+        const img = new Image();
+        img.onload = async () => {
+          const naturalW = img.naturalWidth;
+          const naturalH = img.naturalHeight;
+
+          // Create lightweight thumbnail
+          const thumbCanvas = document.createElement('canvas');
+          thumbCanvas.width = 120;
+          thumbCanvas.height = Math.round((naturalH / naturalW) * 120);
+          const thumbCtx = thumbCanvas.getContext('2d');
+          thumbCtx.drawImage(img, 0, 0, thumbCanvas.width, thumbCanvas.height);
+          const thumbDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.8);
+
+          const templateObj = {
+            id: 'tpl_' + Date.now(),
+            name: file.name.replace(/\.[^/.]+$/, ''),
+            dataUrl: fullDataUrl,
+            thumbDataUrl,
+            naturalW,
+            naturalH,
+            createdAt: Date.now(),
+          };
+
+          try {
+            await saveCustomTemplateToDB(templateObj);
+            await refreshCustomTemplatesList();
+            loadCustomTemplateObject(templateObj);
+            toast(`Template "${templateObj.name}" saved securely on device!`, 'success');
+          } catch (err) {
+            console.error('Error saving template to IndexedDB', err);
+            // Fallback: load directly into workspace
+            state.image = img;
+            state.naturalW = naturalW;
+            state.naturalH = naturalH;
+            canvas.width = state.naturalW;
+            canvas.height = state.naturalH;
+            autoFitZoom();
+            render();
+            toast(`Custom template loaded (${naturalW}×${naturalH}px)`, 'success');
+          }
+        };
+        img.src = fullDataUrl;
       };
-      img.src = url;
+      reader.readAsDataURL(file);
       certFileInput.value = '';
     }
   });
@@ -1773,6 +1941,7 @@
   buildVarChips();
   loadSmtpFromStorage();
   updateRowIndicator();
+  refreshCustomTemplatesList();
 
   // Load default studio template on startup
   generateTemplateCanvas('vg-luxury', () => {

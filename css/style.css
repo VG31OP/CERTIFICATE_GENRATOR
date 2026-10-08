@@ -914,15 +914,19 @@ input:focus, select:focus {
 }
 
 .thumb-luxury { background: linear-gradient(135deg, #000 0%, #27272a 100%); }
-.thumb-platinum { background: linear-gradient(135deg, #27272a 0%, #52525b 100%); }
-.thumb-honors { background: linear-gradient(135deg, #18181b 0%, #000 100%); }
+.thumb-custom {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
 
 .thumb-badge {
   font-size: 8px;
   font-weight: 700;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   color: #a1a1aa;
-  padding: 1px 3px;
+  padding: 1px 4px;
   border-radius: 2px;
 }
 
@@ -930,6 +934,104 @@ input:focus, select:focus {
   font-size: 12px;
   font-weight: 600;
   color: #ffffff;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Custom Template Saved Cards */
+.custom-template-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+}
+
+.custom-template-card:hover {
+  border-color: #52525b;
+}
+
+.custom-template-card.active {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 1px #ffffff;
+}
+
+.custom-template-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.custom-template-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.btn-delete-custom-tpl {
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-delete-custom-tpl:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: var(--danger);
+}
+
+/* Security & On-Device Privacy Box */
+.security-card {
+  background: rgba(24, 24, 27, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.security-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.security-header svg {
+  color: #ffffff;
+}
+
+.security-card p {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0;
 }
 
 /* SMTP Overview & Dispatch */

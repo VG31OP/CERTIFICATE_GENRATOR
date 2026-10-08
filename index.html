@@ -301,6 +301,7 @@
       <div class="sidebar-section">
         <div class="section-header">
           <h3>Built-in Luxury Template</h3>
+          <span class="hint-pill">default</span>
         </div>
         <div class="template-grid">
           <button type="button" class="template-card active" data-template="vg-luxury" id="btnSelectTplLuxury">
@@ -314,13 +315,33 @@
 
       <div class="sidebar-section">
         <div class="section-header">
-          <h3>Custom Certificate Design</h3>
+          <h3>Upload Custom Template</h3>
         </div>
         <button class="btn-subtle" id="btnUploadCustomTpl" type="button">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Upload Custom Template File
+          Upload &amp; Save Template
         </button>
-        <p class="field-hint">Upload high-resolution PNG or JPG background template from Figma / Photoshop / Canva.</p>
+        <p class="field-hint">Uploaded templates are stored securely in your browser's on-device storage and stay saved for your next visit.</p>
+      </div>
+
+      <!-- Saved On-Device User Templates -->
+      <div class="sidebar-section" id="customTemplatesSection" style="display:none">
+        <div class="section-header">
+          <h3>Saved Templates</h3>
+          <span class="hint-pill" id="customTemplatesCount">0 saved</span>
+        </div>
+        <div class="template-grid" id="customTemplatesGrid"></div>
+      </div>
+
+      <!-- 100% On-Device Privacy & Security Guarantee -->
+      <div class="sidebar-section">
+        <div class="security-card">
+          <div class="security-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>100% On-Device Privacy</span>
+          </div>
+          <p>All recipient data, uploaded templates, and generated certificates are stored and processed exclusively in your device's browser memory. Zero data is sent to or stored on external servers.</p>
+        </div>
       </div>
     </div>
 
