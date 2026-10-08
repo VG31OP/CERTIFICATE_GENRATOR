@@ -1304,18 +1304,19 @@
   const customTemplatesSection = document.getElementById('customTemplatesSection');
   const customTemplatesGrid    = document.getElementById('customTemplatesGrid');
   const customTemplatesCount   = document.getElementById('customTemplatesCount');
+  const tplUploadDropzone      = document.getElementById('tplUploadDropzone');
+  const tplUploadLabel         = document.getElementById('tplUploadLabel');
 
   async function refreshCustomTemplatesList() {
     try {
       const templates = await getAllCustomTemplatesFromDB();
-      if (!templates.length) {
-        if (customTemplatesSection) customTemplatesSection.style.display = 'none';
-        return;
-      }
-
-      if (customTemplatesSection) customTemplatesSection.style.display = 'flex';
       if (customTemplatesCount) customTemplatesCount.textContent = `${templates.length} saved`;
       if (!customTemplatesGrid) return;
+
+      if (!templates.length) {
+        customTemplatesGrid.innerHTML = '<p class="field-hint" id="noCustomTplHint">No custom templates saved yet. Upload a certificate background above to store it on your device.</p>';
+        return;
+      }
 
       customTemplatesGrid.innerHTML = '';
       templates.forEach(tpl => {
@@ -1393,57 +1394,78 @@
   }
 
   // Upload and persist custom template to on-device IndexedDB
-  btnUploadCustomTpl.addEventListener('click', () => certFileInput.click());
+  function handleUploadedTemplateFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      toast('Please upload an image file (PNG, JPG, WebP)', 'warning');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const fullDataUrl = e.target.result;
+      const img = new Image();
+      img.onload = async () => {
+        const naturalW = img.naturalWidth;
+        const naturalH = img.naturalHeight;
+
+        // Create lightweight thumbnail
+        const thumbCanvas = document.createElement('canvas');
+        thumbCanvas.width = 120;
+        thumbCanvas.height = Math.max(20, Math.round((naturalH / naturalW) * 120));
+        const thumbCtx = thumbCanvas.getContext('2d');
+        thumbCtx.drawImage(img, 0, 0, thumbCanvas.width, thumbCanvas.height);
+        const thumbDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.8);
+
+        const templateObj = {
+          id: 'tpl_' + Date.now(),
+          name: file.name.replace(/\.[^/.]+$/, ''),
+          dataUrl: fullDataUrl,
+          thumbDataUrl,
+          naturalW,
+          naturalH,
+          createdAt: Date.now(),
+        };
+
+        try {
+          await saveCustomTemplateToDB(templateObj);
+          await refreshCustomTemplatesList();
+          loadCustomTemplateObject(templateObj);
+          if (tplUploadLabel) tplUploadLabel.textContent = file.name;
+          toast(`Template "${templateObj.name}" saved securely on device!`, 'success');
+        } catch (err) {
+          console.error('Error saving template to IndexedDB', err);
+          state.image = img;
+          state.naturalW = naturalW;
+          state.naturalH = naturalH;
+          canvas.width = state.naturalW;
+          canvas.height = state.naturalH;
+          autoFitZoom();
+          render();
+          toast(`Custom template loaded (${naturalW}×${naturalH}px)`, 'success');
+        }
+      };
+      img.src = fullDataUrl;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  if (tplUploadDropzone) {
+    tplUploadDropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      tplUploadDropzone.classList.add('drag-over');
+    });
+    tplUploadDropzone.addEventListener('dragleave', () => {
+      tplUploadDropzone.classList.remove('drag-over');
+    });
+    tplUploadDropzone.addEventListener('drop', e => {
+      e.preventDefault();
+      tplUploadDropzone.classList.remove('drag-over');
+      if (e.dataTransfer.files[0]) handleUploadedTemplateFile(e.dataTransfer.files[0]);
+    });
+  }
+
   certFileInput.addEventListener('change', () => {
     if (certFileInput.files[0]) {
-      const file = certFileInput.files[0];
-      const reader = new FileReader();
-      reader.onload = e => {
-        const fullDataUrl = e.target.result;
-        const img = new Image();
-        img.onload = async () => {
-          const naturalW = img.naturalWidth;
-          const naturalH = img.naturalHeight;
-
-          // Create lightweight thumbnail
-          const thumbCanvas = document.createElement('canvas');
-          thumbCanvas.width = 120;
-          thumbCanvas.height = Math.round((naturalH / naturalW) * 120);
-          const thumbCtx = thumbCanvas.getContext('2d');
-          thumbCtx.drawImage(img, 0, 0, thumbCanvas.width, thumbCanvas.height);
-          const thumbDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.8);
-
-          const templateObj = {
-            id: 'tpl_' + Date.now(),
-            name: file.name.replace(/\.[^/.]+$/, ''),
-            dataUrl: fullDataUrl,
-            thumbDataUrl,
-            naturalW,
-            naturalH,
-            createdAt: Date.now(),
-          };
-
-          try {
-            await saveCustomTemplateToDB(templateObj);
-            await refreshCustomTemplatesList();
-            loadCustomTemplateObject(templateObj);
-            toast(`Template "${templateObj.name}" saved securely on device!`, 'success');
-          } catch (err) {
-            console.error('Error saving template to IndexedDB', err);
-            // Fallback: load directly into workspace
-            state.image = img;
-            state.naturalW = naturalW;
-            state.naturalH = naturalH;
-            canvas.width = state.naturalW;
-            canvas.height = state.naturalH;
-            autoFitZoom();
-            render();
-            toast(`Custom template loaded (${naturalW}×${naturalH}px)`, 'success');
-          }
-        };
-        img.src = fullDataUrl;
-      };
-      reader.readAsDataURL(file);
+      handleUploadedTemplateFile(certFileInput.files[0]);
       certFileInput.value = '';
     }
   });
