@@ -54,8 +54,21 @@
 
   // ── Default typography for new fields ─────────────────────────────
   function defaultTypography(key = '') {
+    const lower = String(key || '').toLowerCase();
+    let defaultFont = FONTS[0].value; // 'Great Vibes' for recipient name
+
+    if (lower.includes('name') || lower.includes('recipient') || lower.includes('student') || lower.includes('attendee')) {
+      defaultFont = "'Great Vibes', cursive";
+    } else if (lower.includes('course') || lower.includes('title') || lower.includes('program') || lower.includes('degree') || lower.includes('distinction')) {
+      defaultFont = "'Cinzel', serif";
+    } else if (lower.includes('date') || lower.includes('id') || lower.includes('cert') || lower.includes('serial')) {
+      defaultFont = "'Lato', sans-serif";
+    } else {
+      defaultFont = "'Cinzel', serif";
+    }
+
     return {
-      font: FONTS[0].value,
+      font: defaultFont,
       size: getAutoFontSizeForField(key),
       color: '#000000',
       bold: false,
@@ -69,6 +82,18 @@
       shadowOffsetY: 3,
       shadowOpacity: 60,
     };
+  }
+
+  function formatFieldPlaceholder(key) {
+    const k = String(key || '').trim();
+    const lower = k.toLowerCase();
+    if (lower.includes('name') || lower.includes('recipient') || lower.includes('student')) return 'Recipient Name';
+    if (lower.includes('course') || lower.includes('title') || lower.includes('program') || lower.includes('degree')) return 'Course / Degree Title';
+    if (lower.includes('date')) return 'October 15, 2026';
+    if (lower.includes('distinction') || lower.includes('honor')) return 'With Highest Distinction';
+    if (lower.includes('id') || lower.includes('cert') || lower.includes('serial')) return 'VG-2026-0814';
+    if (lower.includes('sign') || lower.includes('dean') || lower.includes('director')) return 'Authorized Signature';
+    return k ? (k.charAt(0).toUpperCase() + k.slice(1)) : 'Text Field';
   }
 
   // ── Application State ──────────────────────────────────────────────
@@ -451,12 +476,7 @@
   // ── Field Management ───────────────────────────────────────────────
   function addField(key, x, y, customTypo = null, customValue = null, isCustomText = false) {
     saveHistory();
-    const autoSize = getAutoFontSizeForField(key);
-    const baseTypo = readTypographyFromControls();
-    const t = customTypo || {
-      ...baseTypo,
-      size: autoSize,
-    };
+    const t = customTypo || defaultTypography(key);
     state.fields.push({
       key,
       x,
@@ -542,7 +562,7 @@
       toast('Please upload a certificate template first', 'warning');
       return;
     }
-    const defaultText = 'Certificate of Achievement';
+    const defaultText = 'Custom Text';
     const uniqueKey = 'custom_' + Date.now();
     addField(uniqueKey, 0.50, 0.50, null, defaultText, true);
 
@@ -645,7 +665,7 @@
       } else if (field.isCustomText) {
         value = field.key;
       } else {
-        value = `[${field.key}]`;
+        value = formatFieldPlaceholder(field.key);
       }
       const x = field.x * w;
       const y = field.y * h;
@@ -1616,6 +1636,8 @@
           value = field.customValue;
         } else if (field.isCustomText) {
           value = field.key;
+        } else {
+          value = formatFieldPlaceholder(baseField.key);
         }
         if (!value) continue;
         drawFieldOnCtx(oc, field, value, field.x * state.naturalW, field.y * state.naturalH);
@@ -2055,18 +2077,6 @@
     shadowOpacityVal.textContent = shadowOpacity.value + '%';
     onTypographyChange();
   });
-
-  // Empty state actions
-  if (btnEmptyLoadBuiltin) {
-    btnEmptyLoadBuiltin.addEventListener('click', () => {
-      if (btnSelectTplLuxury) btnSelectTplLuxury.click();
-    });
-  }
-  if (btnEmptyUpload) {
-    btnEmptyUpload.addEventListener('click', () => {
-      if (certFileInput) certFileInput.click();
-    });
-  }
 
   // ── Initialization ─────────────────────────────────────────────────
   fontTriggerLabel.style.fontFamily = state.committedFont;
