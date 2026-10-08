@@ -28,11 +28,35 @@
     { label: 'Courier New',         value: "'Courier New', monospace",       category: 'Monospace' },
   ];
 
+  // ── Auto-Proportional Size Engine ──────────────────────────────────
+  function getAutoFontSizeForField(key) {
+    const h = state.naturalH || 1414;
+    const lower = String(key || '').toLowerCase();
+
+    // Recipient Name fields -> prominent display size (~5.8% of template height)
+    if (lower.includes('name') || lower.includes('recipient') || lower.includes('student') || lower.includes('nominee') || lower.includes('person') || lower.includes('attendee')) {
+      return Math.max(14, Math.round(h * 0.058));
+    }
+
+    // Course / Achievement / Title / Degree / Program -> strong subtitle (~2.6% of template height)
+    if (lower.includes('course') || lower.includes('title') || lower.includes('award') || lower.includes('event') || lower.includes('program') || lower.includes('degree') || lower.includes('track') || lower.includes('project') || lower.includes('topic')) {
+      return Math.max(12, Math.round(h * 0.026));
+    }
+
+    // Date / ID / Serial / Signature / Distinction / Honors -> elegant label (~1.8% of template height)
+    if (lower.includes('date') || lower.includes('id') || lower.includes('cert') || lower.includes('serial') || lower.includes('sign') || lower.includes('distinction') || lower.includes('honors') || lower.includes('rank') || lower.includes('score') || lower.includes('grade') || lower.includes('roll')) {
+      return Math.max(10, Math.round(h * 0.018));
+    }
+
+    // Generic / Custom Fields -> balanced size (~3.2% of template height)
+    return Math.max(12, Math.round(h * 0.032));
+  }
+
   // ── Default typography for new fields ─────────────────────────────
-  function defaultTypography() {
+  function defaultTypography(key = '') {
     return {
       font:          FONTS[0].value,
-      size:          700,
+      size:          getAutoFontSizeForField(key),
       color:         '#000000',
       bold:          false,
       italic:        false,
@@ -424,7 +448,12 @@
   // ── Field Management ───────────────────────────────────────────────
   function addField(key, x, y, customTypo = null) {
     saveHistory();
-    const t = customTypo || readTypographyFromControls();
+    const autoSize = getAutoFontSizeForField(key);
+    const baseTypo = readTypographyFromControls();
+    const t = customTypo || {
+      ...baseTypo,
+      size: autoSize,
+    };
     state.fields.push({ key, x, y, ...t, _bbox: null });
     selectField(state.fields.length - 1);
     updateBulkBtn();
@@ -781,6 +810,22 @@
     render();
     toast('Field centered horizontally', 'success');
   });
+
+  const btnAutoFontSize = document.getElementById('btnAutoFontSize');
+  if (btnAutoFontSize) {
+    btnAutoFontSize.addEventListener('click', () => {
+      if (state.activeFieldIdx < 0) {
+        toast('Select a field on the certificate first', 'warning');
+        return;
+      }
+      saveHistory();
+      const baseField = state.fields[state.activeFieldIdx];
+      const optimalSize = getAutoFontSizeForField(baseField.key);
+      fontSize.value = optimalSize;
+      onTypographyChange();
+      toast(`Auto font size computed: ${optimalSize}px`, 'success');
+    });
+  }
 
   // Keyboard Shortcuts
   window.addEventListener('keydown', e => {
@@ -1268,7 +1313,7 @@
           x: 0.50,
           y: 0.42,
           font: "'Great Vibes', cursive",
-          size: 700,
+          size: getAutoFontSizeForField('name'),
           color: '#000000',
           bold: false,
           italic: false,
@@ -1286,7 +1331,7 @@
           x: 0.50,
           y: 0.51,
           font: "'Cinzel', serif",
-          size: 190,
+          size: getAutoFontSizeForField('course'),
           color: '#000000',
           bold: true,
           italic: false,
@@ -1304,7 +1349,7 @@
           x: 0.25,
           y: 0.79,
           font: "'Lato', sans-serif",
-          size: 130,
+          size: getAutoFontSizeForField('date'),
           color: '#000000',
           bold: false,
           italic: false,
@@ -1322,7 +1367,7 @@
           x: 0.50,
           y: 0.63,
           font: "'Lato', sans-serif",
-          size: 110,
+          size: getAutoFontSizeForField('cert_id'),
           color: '#52525b',
           bold: false,
           italic: false,
