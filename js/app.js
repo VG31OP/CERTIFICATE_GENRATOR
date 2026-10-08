@@ -1609,14 +1609,14 @@
   function showDropZone() {
     certDropZone.style.display  = '';
     canvasContainer.style.display = 'none';
-    canvasHint.style.display    = 'none';
+    if (canvasHint) canvasHint.style.display = 'none';
     changeTemplateBtn.classList.remove('visible');
   }
 
   function hideDropZone() {
     certDropZone.style.display    = 'none';
     canvasContainer.style.display = '';
-    canvasHint.style.display      = '';
+    if (canvasHint) canvasHint.style.display = 'none';
     changeTemplateBtn.classList.add('visible');
     document.getElementById('sidebar').style.display = '';
   }
