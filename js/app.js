@@ -105,7 +105,6 @@
   const canvasWrap = document.getElementById('canvasWrap');
   const canvasContainer = document.getElementById('canvasContainer');
   const canvasEmptyState = document.getElementById('canvasEmptyState');
-  const btnEmptyLoadBuiltin = document.getElementById('btnEmptyLoadBuiltin');
   const btnEmptyUpload = document.getElementById('btnEmptyUpload');
   const customTextInputGroup = document.getElementById('customTextInputGroup');
   const customTextInput = document.getElementById('customTextInput');
@@ -539,8 +538,9 @@
 
   btnAddFieldDirect.addEventListener('click', () => {
     if (!state.image) {
-      const luxuryBtn = document.getElementById('btnSelectTplLuxury');
-      if (luxuryBtn) luxuryBtn.click();
+      if (certFileInput) certFileInput.click();
+      toast('Please upload a certificate template first', 'warning');
+      return;
     }
     const defaultText = 'Certificate of Achievement';
     const uniqueKey = 'custom_' + Date.now();
@@ -1569,6 +1569,7 @@
   }
 
   if (tplUploadDropzone) {
+    tplUploadDropzone.addEventListener('click', () => certFileInput.click());
     tplUploadDropzone.addEventListener('dragover', e => {
       e.preventDefault();
       tplUploadDropzone.classList.add('drag-over');
@@ -1581,6 +1582,10 @@
       tplUploadDropzone.classList.remove('drag-over');
       if (e.dataTransfer.files[0]) handleUploadedTemplateFile(e.dataTransfer.files[0]);
     });
+  }
+
+  if (btnEmptyUpload) {
+    btnEmptyUpload.addEventListener('click', () => certFileInput.click());
   }
 
   certFileInput.addEventListener('change', () => {
