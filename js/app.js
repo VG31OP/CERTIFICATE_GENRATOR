@@ -174,7 +174,6 @@
   const btnResetRowOverride = document.getElementById('btnResetRowOverride');
 
   // Quick Action Buttons
-  const btnHeaderDemo = document.getElementById('btnHeaderDemo');
   const btnAddFieldDirect = document.getElementById('btnAddFieldDirect');
   const btnUndo = document.getElementById('btnUndo');
   const btnRedo = document.getElementById('btnRedo');
@@ -1510,7 +1509,7 @@
     btnSelectTplLuxury.addEventListener('click', () => {
       document.querySelectorAll('.template-card, .custom-template-card').forEach(c => c.classList.remove('active'));
       btnSelectTplLuxury.classList.add('active');
-      generateTemplateCanvas('vg-luxury', () => toast('VG DEMO Certificate loaded', 'success'));
+      generateTemplateCanvas('vg-luxury', () => toast('VG Luxury Certificate loaded', 'success'));
     });
   }
 
@@ -1591,96 +1590,7 @@
     }
   });
 
-  // ── Load Entire Demo Project ───────────────────────────────────────
-  function loadVGDemoProject() {
-    if (btnSelectTplLuxury) {
-      document.querySelectorAll('.template-card, .custom-template-card').forEach(c => c.classList.remove('active'));
-      btnSelectTplLuxury.classList.add('active');
-    }
-    generateTemplateCanvas('vg-luxury', () => {
-      loadSampleRecipientData(true);
-      state.fields = [
-        {
-          key: 'name',
-          x: 0.50,
-          y: 0.42,
-          font: "'Great Vibes', cursive",
-          size: getAutoFontSizeForField('name'),
-          color: '#000000',
-          bold: false,
-          italic: false,
-          align: 'center',
-          textTransform: 'none',
-          shadowEnabled: false,
-          shadowColor: '#000000',
-          shadowBlur: 6,
-          shadowOffsetX: 2,
-          shadowOffsetY: 3,
-          shadowOpacity: 60,
-        },
-        {
-          key: 'course',
-          x: 0.50,
-          y: 0.51,
-          font: "'Cinzel', serif",
-          size: getAutoFontSizeForField('course'),
-          color: '#000000',
-          bold: true,
-          italic: false,
-          align: 'center',
-          textTransform: 'none',
-          shadowEnabled: false,
-          shadowColor: '#000000',
-          shadowBlur: 6,
-          shadowOffsetX: 2,
-          shadowOffsetY: 3,
-          shadowOpacity: 60,
-        },
-        {
-          key: 'date',
-          x: 0.25,
-          y: 0.79,
-          font: "'Lato', sans-serif",
-          size: getAutoFontSizeForField('date'),
-          color: '#000000',
-          bold: false,
-          italic: false,
-          align: 'center',
-          textTransform: 'none',
-          shadowEnabled: false,
-          shadowColor: '#000000',
-          shadowBlur: 6,
-          shadowOffsetX: 2,
-          shadowOffsetY: 3,
-          shadowOpacity: 60,
-        },
-        {
-          key: 'cert_id',
-          x: 0.50,
-          y: 0.63,
-          font: "'Lato', sans-serif",
-          size: getAutoFontSizeForField('cert_id'),
-          color: '#52525b',
-          bold: false,
-          italic: false,
-          align: 'center',
-          textTransform: 'uppercase',
-          shadowEnabled: false,
-          shadowColor: '#000000',
-          shadowBlur: 6,
-          shadowOffsetX: 2,
-          shadowOffsetY: 3,
-          shadowOpacity: 60,
-        }
-      ];
-      selectField(0);
-      updateBulkBtn();
-      render();
-      toast('Demo project loaded with 4 recipients!', 'success');
-    });
-  }
 
-  btnHeaderDemo.addEventListener('click', loadVGDemoProject);
 
   // ── Certificate Blob Generation ────────────────────────────────────
   function generateCertBlob(rowData, rowIdx = -1) {

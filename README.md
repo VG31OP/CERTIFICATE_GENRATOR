@@ -8,7 +8,7 @@ A modern, high-performance web platform for generating personalized certificates
 
 - **Interactive Certificate Canvas** — Upload your own PNG/JPG/WebP certificate template or click **Use VG Luxury Certificate Template** to generate a high-res certificate on the fly.
 - **Excel & CSV Data Import** — Automatically extracts all columns and turns them into draggable fields; supports `.xlsx`, `.xls`, and `.csv`.
-- **1-Click Demo Project** — Load sample luxury templates, recipients, and styled variable placements with a single click.
+- **Instant Sample Data** — Load sample recipients and standard columns to test your template layout with a single click.
 - **Dynamic Recipient Stepper** — Page through recipients with `❮` and `❯` buttons on the live canvas to review each person's exact certificate before distribution.
 - **Rich Typography & Styling** — 20+ curated fonts (Handwriting, Elegant Serif, Classic, Sans-Serif, Monospace), font size, custom color, bold/italic, text transforms, and configurable drop shadows.
 - **Per-Row Fine-Tuning** — Customize position or typography for specific recipients with long names without affecting others.
