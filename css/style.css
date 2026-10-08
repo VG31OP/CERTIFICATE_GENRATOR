@@ -982,23 +982,30 @@ input:focus, select:focus {
 }
 
 .btn-delete-custom-tpl {
-  width: 26px;
-  height: 26px;
-  background: transparent;
-  border: 1px solid transparent;
+  position: relative;
+  z-index: 5;
+  width: 28px;
+  height: 28px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 4px;
-  color: var(--text-muted);
+  color: var(--danger);
   cursor: pointer;
   display: grid;
   place-items: center;
   transition: all 0.15s;
   flex-shrink: 0;
+  pointer-events: auto;
+}
+
+.btn-delete-custom-tpl * {
+  pointer-events: none;
 }
 
 .btn-delete-custom-tpl:hover {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.4);
-  color: var(--danger);
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
 }
 
 /* Security & On-Device Privacy Box */

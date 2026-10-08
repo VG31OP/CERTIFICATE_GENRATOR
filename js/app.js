@@ -1289,14 +1289,32 @@
     });
   }
 
-  async function deleteCustomTemplateFromDB(id) {
+  async function deleteCustomTemplateFromDB(id, name) {
     const db = await getDB();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_TEMPLATES, 'readwrite');
       const store = tx.objectStore(STORE_TEMPLATES);
-      const req = store.delete(id);
-      req.onsuccess = () => resolve(true);
-      req.onerror = () => reject(req.error);
+
+      try {
+        if (id != null) store.delete(id);
+        if (typeof id === 'string' && !isNaN(Number(id))) store.delete(Number(id));
+      } catch (_) {}
+
+      const req = store.openCursor();
+      req.onsuccess = e => {
+        const cursor = e.target.result;
+        if (cursor) {
+          const val = cursor.value;
+          const matchId = id != null && (val.id == id || String(val.id) === String(id) || cursor.key == id || String(cursor.key) === String(id));
+          const matchName = name && val.name === name;
+          if (matchId || matchName) {
+            cursor.delete();
+          }
+          cursor.continue();
+        }
+      };
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => reject(tx.error);
     });
   }
 
@@ -1306,6 +1324,26 @@
   const customTemplatesCount   = document.getElementById('customTemplatesCount');
   const tplUploadDropzone      = document.getElementById('tplUploadDropzone');
   const tplUploadLabel         = document.getElementById('tplUploadLabel');
+
+  async function removeCustomTemplate(tplId, tplName) {
+    if (!tplId && !tplName) return;
+    try {
+      await deleteCustomTemplateFromDB(tplId, tplName);
+      toast(`Deleted "${tplName || 'Template'}" from device`, 'success');
+      if (state.templateType === `custom-${tplId}` || state.templateType === `custom-${String(tplId)}`) {
+        const luxuryBtn = document.getElementById('btnSelectTplLuxury');
+        if (luxuryBtn) {
+          luxuryBtn.click();
+        } else {
+          generateTemplateCanvas('vg-luxury');
+        }
+      }
+      await refreshCustomTemplatesList();
+    } catch (err) {
+      console.error('Delete template failed:', err);
+      toast('Could not delete template: ' + err.message, 'warning');
+    }
+  }
 
   async function refreshCustomTemplatesList() {
     try {
@@ -1333,7 +1371,7 @@
             <span class="template-name">${esc(tpl.name)}</span>
             <span class="custom-template-meta">${new Date(tpl.createdAt || Date.now()).toLocaleDateString()}</span>
           </div>
-          <button type="button" class="btn-delete-custom-tpl" title="Delete template from device" aria-label="Delete template">
+          <button type="button" class="btn-delete-custom-tpl" data-del-id="${tpl.id}" data-name="${esc(tpl.name)}" title="Delete template from device" aria-label="Delete template">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
           </button>
         `;
@@ -1344,23 +1382,33 @@
         });
 
         const delBtn = card.querySelector('.btn-delete-custom-tpl');
-        delBtn.addEventListener('click', async e => {
-          e.stopPropagation();
-          if (confirm(`Delete saved template "${tpl.name}" from your device?`)) {
-            await deleteCustomTemplateFromDB(tpl.id);
-            toast('Template deleted from device', 'success');
-            if (state.templateType === `custom-${tpl.id}`) {
-              document.getElementById('btnSelectTplLuxury')?.click();
-            }
-            refreshCustomTemplatesList();
-          }
-        });
+        if (delBtn) {
+          delBtn.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            removeCustomTemplate(tpl.id, tpl.name);
+          });
+        }
 
         customTemplatesGrid.appendChild(card);
       });
     } catch (err) {
       console.warn('Failed to load custom templates from IndexedDB', err);
     }
+  }
+
+  // Delegated grid listener as safety net
+  if (customTemplatesGrid) {
+    customTemplatesGrid.addEventListener('click', e => {
+      const delBtn = e.target.closest('.btn-delete-custom-tpl');
+      if (delBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = delBtn.dataset.delId;
+        const name = delBtn.dataset.name;
+        if (id || name) removeCustomTemplate(id, name);
+      }
+    });
   }
 
   function loadCustomTemplateObject(tpl) {
