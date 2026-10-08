@@ -955,10 +955,20 @@
     state.scale = Math.max(0.04, Math.min(5.0, scale));
     zoomLbl.textContent = Math.round(state.scale * 100) + '%';
     if (state.naturalW && state.naturalH) {
-      canvas.width = state.naturalW;
-      canvas.height = state.naturalH;
+      let needsRedraw = false;
+      if (canvas.width !== state.naturalW) {
+        canvas.width = state.naturalW;
+        needsRedraw = true;
+      }
+      if (canvas.height !== state.naturalH) {
+        canvas.height = state.naturalH;
+        needsRedraw = true;
+      }
       canvas.style.width  = Math.round(state.naturalW  * state.scale) + 'px';
       canvas.style.height = Math.round(state.naturalH * state.scale) + 'px';
+      if (needsRedraw) {
+        render();
+      }
     }
   }
 
