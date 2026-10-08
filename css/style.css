@@ -502,30 +502,65 @@ input[type="range"] {
   bottom: 20px;
   right: 20px;
   display: flex;
+  align-items: center;
   gap: 6px;
+  background: rgba(17, 17, 20, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  z-index: 20;
 }
 
 .zoom-btn {
-  width: 32px; height: 32px;
-  background: var(--surface);
+  width: 28px;
+  height: 28px;
+  background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 5px;
   color: var(--text);
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  display: grid; place-items: center;
-  transition: border-color 0.15s;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s;
+  user-select: none;
 }
-.zoom-btn:hover { border-color: var(--accent); }
+.zoom-btn:hover {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+.zoom-btn-text {
+  width: auto;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
 
 .zoom-level {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  color: var(--text);
   font-size: 12px;
-  display: grid; place-items: center;
-  padding: 0 10px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  padding: 0 6px;
+  cursor: pointer;
+  user-select: none;
+  min-width: 44px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.15s;
+}
+.zoom-level:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
 /* ─── Toast ───────────────────────────────────── */

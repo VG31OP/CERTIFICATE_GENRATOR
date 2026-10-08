@@ -806,7 +806,7 @@
     toast(`"${key}" placed on canvas`, 'success');
   });
 
-  // ── Canvas drag to reposition fields ──────────────────────────────
+  // ── Canvas drag to reposition fields & Pan ────────────────────────
   function canvasCoords(e) {
     const rect = canvas.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -817,29 +817,61 @@
     };
   }
 
-  canvas.addEventListener('mousedown', e => {
-    if (e.button !== 0) return;
-    const c = canvasCoords(e);
-    const cx = c.x * state.naturalW;
-    const cy = c.y * state.naturalH;
-    const hitIdx = hitTestFields(cx, cy);
+  function startPanning(e) {
+    if (!state.image) return;
+    const wrap = document.getElementById('canvasWrap');
+    if (!wrap) return;
+    state.isPanning = true;
+    state.panStartX = e.clientX;
+    state.panStartY = e.clientY;
+    state.scrollStartX = wrap.scrollLeft;
+    state.scrollStartY = wrap.scrollTop;
+    wrap.style.cursor = 'grabbing';
+    canvas.style.cursor = 'grabbing';
+  }
 
-    if (hitIdx >= 0) {
-      selectField(hitIdx);
-      state.draggingField = true;
-      const baseField = state.fields[hitIdx];
-      // Use effective (override-aware) position for drag offset calculation
-      const f = getEffectiveField(baseField, state.previewRowIdx);
-      state.dragFieldOffX = c.x - f.x;
-      state.dragFieldOffY = c.y - f.y;
-      canvas.style.cursor = 'grabbing';
-    } else {
-      selectField(-1);
+  canvas.addEventListener('mousedown', e => {
+    if (e.button === 2) return; // Ignore right click
+    if (e.button === 1 || e.altKey || e.shiftKey) { // Middle click or modifier -> pan
+      startPanning(e);
+      e.preventDefault();
+      return;
     }
-    e.preventDefault();
+
+    if (e.button === 0) {
+      const c = canvasCoords(e);
+      const cx = c.x * state.naturalW;
+      const cy = c.y * state.naturalH;
+      const hitIdx = hitTestFields(cx, cy);
+
+      if (hitIdx >= 0) {
+        selectField(hitIdx);
+        state.draggingField = true;
+        const baseField = state.fields[hitIdx];
+        const f = getEffectiveField(baseField, state.previewRowIdx);
+        state.dragFieldOffX = c.x - f.x;
+        state.dragFieldOffY = c.y - f.y;
+        canvas.style.cursor = 'grabbing';
+      } else {
+        selectField(-1);
+        startPanning(e);
+      }
+      e.preventDefault();
+    }
   });
 
   window.addEventListener('mousemove', e => {
+    if (state.isPanning) {
+      const wrap = document.getElementById('canvasWrap');
+      if (wrap) {
+        const dx = e.clientX - state.panStartX;
+        const dy = e.clientY - state.panStartY;
+        wrap.scrollLeft = state.scrollStartX - dx;
+        wrap.scrollTop  = state.scrollStartY - dy;
+      }
+      return;
+    }
+
     if (!state.draggingField || state.activeFieldIdx < 0) return;
     const c = canvasCoords(e);
     const newX = Math.max(0, Math.min(1, c.x - state.dragFieldOffX));
@@ -862,6 +894,11 @@
   });
 
   window.addEventListener('mouseup', () => {
+    if (state.isPanning) {
+      state.isPanning = false;
+      const wrap = document.getElementById('canvasWrap');
+      if (wrap) wrap.style.cursor = '';
+    }
     state.draggingField = false;
     canvas.style.cursor = 'crosshair';
   });
@@ -908,34 +945,114 @@
 
   window.addEventListener('touchend', () => { state.draggingField = false; });
 
-  // ── Zoom ───────────────────────────────────────────────────────────
-  const ZOOM_STEPS = [0.25, 0.35, 0.5, 0.65, 0.75, 1.0];
-  let zoomIdx = 3;
+  // ── Unrestricted Zoom & Pan System ──────────────────────────────────
+  const ZOOM_PRESETS = [0.08, 0.12, 0.16, 0.20, 0.25, 0.33, 0.40, 0.50, 0.65, 0.75, 0.85, 1.00, 1.25, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00];
 
-  function applyZoom() {
-    state.scale = ZOOM_STEPS[zoomIdx];
+  function setZoom(scale) {
+    state.scale = Math.max(0.04, Math.min(5.0, scale));
     zoomLbl.textContent = Math.round(state.scale * 100) + '%';
-    if (state.naturalW) {
+    if (state.naturalW && state.naturalH) {
+      canvas.width = state.naturalW;
+      canvas.height = state.naturalH;
       canvas.style.width  = Math.round(state.naturalW  * state.scale) + 'px';
       canvas.style.height = Math.round(state.naturalH * state.scale) + 'px';
     }
   }
 
-  zoomInBtn.addEventListener('click',  () => { if (zoomIdx < ZOOM_STEPS.length - 1) { zoomIdx++; applyZoom(); } });
-  zoomOutBtn.addEventListener('click', () => { if (zoomIdx > 0)                     { zoomIdx--; applyZoom(); } });
+  function zoomIn() {
+    const current = state.scale;
+    const nextPreset = ZOOM_PRESETS.find(p => p > current + 0.015);
+    if (nextPreset) setZoom(nextPreset);
+    else setZoom(current * 1.2);
+  }
+
+  function zoomOut() {
+    const current = state.scale;
+    const prevPresets = ZOOM_PRESETS.filter(p => p < current - 0.015);
+    if (prevPresets.length) setZoom(prevPresets[prevPresets.length - 1]);
+    else setZoom(current / 1.2);
+  }
 
   function autoFitZoom() {
+    if (!state.naturalW || !state.naturalH) return;
     const wrap = document.getElementById('canvasWrap');
-    const availW = (wrap.clientWidth  || 800) - 48;
-    const availH = (wrap.clientHeight || 600) - 100;
-    const bestScale = Math.min(availW / state.naturalW, availH / state.naturalH, 1.0);
-    let idx = 0;
-    for (let i = 0; i < ZOOM_STEPS.length; i++) {
-      if (ZOOM_STEPS[i] <= bestScale) idx = i;
-    }
-    zoomIdx = idx;
-    applyZoom();
+    if (!wrap) return;
+    const wrapRect = wrap.getBoundingClientRect();
+    const paddingX = 56;
+    const paddingY = 96;
+    const availW = Math.max(200, (wrapRect.width || wrap.clientWidth || 800) - paddingX);
+    const availH = Math.max(200, (wrapRect.height || wrap.clientHeight || 600) - paddingY);
+
+    const scaleX = availW / state.naturalW;
+    const scaleY = availH / state.naturalH;
+    let bestScale = Math.min(scaleX, scaleY);
+    bestScale = Math.max(0.04, Math.min(bestScale, 1.0));
+
+    setZoom(bestScale);
   }
+
+  zoomInBtn.addEventListener('click', zoomIn);
+  zoomOutBtn.addEventListener('click', zoomOut);
+
+  const zoomFitBtn = document.getElementById('zoomFit');
+  if (zoomFitBtn) zoomFitBtn.addEventListener('click', autoFitZoom);
+
+  const zoom100Btn = document.getElementById('zoom100');
+  if (zoom100Btn) zoom100Btn.addEventListener('click', () => setZoom(1.0));
+
+  zoomLbl.addEventListener('click', () => {
+    if (Math.abs(state.scale - 1.0) < 0.04) {
+      autoFitZoom();
+    } else {
+      setZoom(1.0);
+    }
+  });
+
+  // Direct Mouse Wheel Zoom (Scroll anywhere on canvas/wrap to zoom smoothly)
+  const canvasWrap = document.getElementById('canvasWrap');
+  if (canvasWrap) {
+    canvasWrap.addEventListener('wheel', e => {
+      if (!state.image) return;
+      e.preventDefault();
+
+      const delta = -e.deltaY;
+      const zoomFactor = delta > 0 ? 1.12 : 0.89;
+
+      const wrapRect = canvasWrap.getBoundingClientRect();
+      const mouseX = e.clientX - wrapRect.left + canvasWrap.scrollLeft;
+      const mouseY = e.clientY - wrapRect.top + canvasWrap.scrollTop;
+
+      const prevScale = state.scale;
+      const newScale = Math.max(0.04, Math.min(5.0, prevScale * zoomFactor));
+
+      if (Math.abs(newScale - prevScale) > 0.0001) {
+        setZoom(newScale);
+
+        // Reposition scroll so mouse cursor stays on the exact focal point
+        const scaleRatio = newScale / prevScale;
+        canvasWrap.scrollLeft = (mouseX * scaleRatio) - (e.clientX - wrapRect.left);
+        canvasWrap.scrollTop  = (mouseY * scaleRatio) - (e.clientY - wrapRect.top);
+      }
+    }, { passive: false });
+
+    // Allow panning by dragging on background of canvasWrap
+    canvasWrap.addEventListener('mousedown', e => {
+      if (e.target === canvasWrap || e.target === canvasContainer) {
+        startPanning(e);
+        e.preventDefault();
+      }
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    if (state.image && !state.draggingField) {
+      // Re-apply current zoom styling so canvas matches container
+      if (state.naturalW) {
+        canvas.style.width  = Math.round(state.naturalW  * state.scale) + 'px';
+        canvas.style.height = Math.round(state.naturalH * state.scale) + 'px';
+      }
+    }
+  });
 
   // ── Typography control changes → update active field ──────────────
   function onTypographyChange() {
@@ -1498,9 +1615,13 @@
       state.image    = img;
       state.naturalW = img.naturalWidth;
       state.naturalH = img.naturalHeight;
-      autoFitZoom();
+      canvas.width   = state.naturalW;
+      canvas.height  = state.naturalH;
       hideDropZone();
-      render();
+      requestAnimationFrame(() => {
+        autoFitZoom();
+        render();
+      });
       URL.revokeObjectURL(url);
       toast(`Certificate loaded — ${state.naturalW}×${state.naturalH}px`, 'success');
     };
@@ -1656,10 +1777,14 @@
       state.image    = img;
       state.naturalW = img.naturalWidth;
       state.naturalH = img.naturalHeight;
-      autoFitZoom();
+      canvas.width   = state.naturalW;
+      canvas.height  = state.naturalH;
       hideDropZone();
-      render();
-      if (onComplete) onComplete();
+      requestAnimationFrame(() => {
+        autoFitZoom();
+        render();
+        if (onComplete) onComplete();
+      });
     };
     img.src = offscreen.toDataURL('image/png');
   }
