@@ -74,7 +74,7 @@
   // ── Application State ──────────────────────────────────────────────
   const state = {
     image: null,
-    templateType: 'vg-luxury',
+    templateType: null,
     naturalW: 2000,
     naturalH: 1414,
     scale: 0.65,
@@ -104,6 +104,9 @@
   const ctx = canvas.getContext('2d');
   const canvasWrap = document.getElementById('canvasWrap');
   const canvasContainer = document.getElementById('canvasContainer');
+  const canvasEmptyState = document.getElementById('canvasEmptyState');
+  const btnEmptyLoadBuiltin = document.getElementById('btnEmptyLoadBuiltin');
+  const btnEmptyUpload = document.getElementById('btnEmptyUpload');
 
   // Typography controls
   const fontSize = document.getElementById('fontSize');
@@ -555,7 +558,14 @@
 
   // ── High-Performance Canvas Rendering ──────────────────────────────
   function render() {
-    if (!state.image) return;
+    if (!state.image) {
+      if (canvasEmptyState) canvasEmptyState.style.display = 'flex';
+      if (canvasContainer) canvasContainer.style.display = 'none';
+      return;
+    }
+    if (canvasEmptyState) canvasEmptyState.style.display = 'none';
+    if (canvasContainer) canvasContainer.style.display = 'inline-block';
+
     const w = state.naturalW;
     const h = state.naturalH;
     if (canvas.width !== w || canvas.height !== h) {
@@ -1331,12 +1341,10 @@
       await deleteCustomTemplateFromDB(tplId, tplName);
       toast(`Deleted "${tplName || 'Template'}" from device`, 'success');
       if (state.templateType === `custom-${tplId}` || state.templateType === `custom-${String(tplId)}`) {
-        const luxuryBtn = document.getElementById('btnSelectTplLuxury');
-        if (luxuryBtn) {
-          luxuryBtn.click();
-        } else {
-          generateTemplateCanvas('vg-luxury');
-        }
+        state.image = null;
+        state.templateType = null;
+        document.querySelectorAll('.template-card, .custom-template-card').forEach(c => c.classList.remove('active'));
+        render();
       }
       await refreshCustomTemplatesList();
     } catch (err) {
@@ -1520,6 +1528,10 @@
 
   // ── Load Entire Demo Project ───────────────────────────────────────
   function loadVGDemoProject() {
+    if (btnSelectTplLuxury) {
+      document.querySelectorAll('.template-card, .custom-template-card').forEach(c => c.classList.remove('active'));
+      btnSelectTplLuxury.classList.add('active');
+    }
     generateTemplateCanvas('vg-luxury', () => {
       loadSampleRecipientData(true);
       state.fields = [
@@ -2006,16 +2018,24 @@
     onTypographyChange();
   });
 
+  // Empty state actions
+  if (btnEmptyLoadBuiltin) {
+    btnEmptyLoadBuiltin.addEventListener('click', () => {
+      if (btnSelectTplLuxury) btnSelectTplLuxury.click();
+    });
+  }
+  if (btnEmptyUpload) {
+    btnEmptyUpload.addEventListener('click', () => {
+      if (certFileInput) certFileInput.click();
+    });
+  }
+
   // ── Initialization ─────────────────────────────────────────────────
   fontTriggerLabel.style.fontFamily = state.committedFont;
   buildVarChips();
   loadSmtpFromStorage();
   updateRowIndicator();
   refreshCustomTemplatesList();
-
-  // Load default studio template on startup
-  generateTemplateCanvas('vg-luxury', () => {
-    autoFitZoom();
-  });
+  render();
 
 })();

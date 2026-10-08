@@ -132,9 +132,17 @@
     <!-- Left Sidebar Controls -->
     <aside class="studio-sidebar" id="sidebar">
 
-      <!-- Studio Tab Navigation -->
+    <!-- Studio Tab Navigation -->
       <div class="sidebar-tabs">
-        <button type="button" class="sidebar-tab active" data-tab="tab-data" id="tabBtnData">
+        <button type="button" class="sidebar-tab active" data-tab="tab-templates" id="tabBtnTemplates">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+          <span>Templates</span>
+        </button>
+        <button type="button" class="sidebar-tab" data-tab="tab-data" id="tabBtnData">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
             <polyline points="14 2 14 8 20 8" />
@@ -151,14 +159,6 @@
           </svg>
           <span>Style</span>
         </button>
-        <button type="button" class="sidebar-tab" data-tab="tab-templates" id="tabBtnTemplates">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
-          <span>Templates</span>
-        </button>
         <button type="button" class="sidebar-tab" data-tab="tab-email" id="tabBtnEmail">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -168,8 +168,70 @@
         </button>
       </div>
 
-      <!-- ── TAB 1: DATA & RECIPIENTS ────────────────────── -->
-      <div class="tab-content active" id="tab-data">
+      <!-- ── TAB 1: TEMPLATES & BRANDING ─────────────────── -->
+      <div class="tab-content active" id="tab-templates">
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Built-in Luxury Template</h3>
+            <span class="hint-pill">default</span>
+          </div>
+          <div class="template-grid">
+            <button type="button" class="template-card" data-template="vg-luxury" id="btnSelectTplLuxury">
+              <div class="template-thumb thumb-luxury">
+                <span class="thumb-badge">2000×1414</span>
+              </div>
+              <span class="template-name">VG DEMO Certificate</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-header">
+            <h3>Upload Template</h3>
+          </div>
+          <div class="upload-dropzone" id="tplUploadDropzone">
+            <input type="file" id="certFileInput" accept="image/png,image/jpeg,image/webp,image/jpg" />
+            <div class="upload-inner">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <div class="upload-title" id="tplUploadLabel">Drop Template Image or Browse</div>
+              <div class="upload-hint">PNG, JPG, WebP (Saved on device)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saved On-Device User Templates -->
+        <div class="sidebar-section" id="customTemplatesSection">
+          <div class="section-header">
+            <h3>Saved Templates</h3>
+            <span class="hint-pill" id="customTemplatesCount">0 saved</span>
+          </div>
+          <div class="template-grid" id="customTemplatesGrid">
+            <p class="field-hint" id="noCustomTplHint">No custom templates saved yet. Upload a certificate background
+              above to store it on your device.</p>
+          </div>
+        </div>
+
+        <!-- 100% On-Device Privacy & Security Guarantee -->
+        <div class="sidebar-section">
+          <div class="security-card">
+            <div class="security-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>100% On-Device Privacy</span>
+            </div>
+            <p>All recipient data, uploaded templates, and generated certificates are stored and processed exclusively
+              in your device's browser memory. Zero data is sent to or stored on external servers.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 2: DATA & RECIPIENTS ────────────────────── -->
+      <div class="tab-content" id="tab-data">
         <div class="sidebar-section">
           <div class="section-header">
             <h3>Recipient Data Source</h3>
@@ -229,7 +291,7 @@
         </div>
       </div>
 
-      <!-- ── TAB 2: TYPOGRAPHY & STYLE ──────────────────── -->
+      <!-- ── TAB 3: TYPOGRAPHY & STYLE ──────────────────── -->
       <div class="tab-content" id="tab-typography">
         <div class="sidebar-section">
           <div class="section-header">
@@ -370,68 +432,6 @@
         </div>
       </div>
 
-      <!-- ── TAB 3: TEMPLATES & BRANDING ─────────────────── -->
-      <div class="tab-content" id="tab-templates">
-        <div class="sidebar-section">
-          <div class="section-header">
-            <h3>Built-in Luxury Template</h3>
-            <span class="hint-pill">default</span>
-          </div>
-          <div class="template-grid">
-            <button type="button" class="template-card active" data-template="vg-luxury" id="btnSelectTplLuxury">
-              <div class="template-thumb thumb-luxury">
-                <span class="thumb-badge">2000×1414</span>
-              </div>
-              <span class="template-name">VG DEMO Certificate</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="sidebar-section">
-          <div class="section-header">
-            <h3>Upload Template</h3>
-          </div>
-          <div class="upload-dropzone" id="tplUploadDropzone">
-            <input type="file" id="certFileInput" accept="image/png,image/jpeg,image/webp,image/jpg" />
-            <div class="upload-inner">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-              <div class="upload-title" id="tplUploadLabel">Drop Template Image or Browse</div>
-              <div class="upload-hint">PNG, JPG, WebP (Saved on device)</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Saved On-Device User Templates -->
-        <div class="sidebar-section" id="customTemplatesSection">
-          <div class="section-header">
-            <h3>Saved Templates</h3>
-            <span class="hint-pill" id="customTemplatesCount">0 saved</span>
-          </div>
-          <div class="template-grid" id="customTemplatesGrid">
-            <p class="field-hint" id="noCustomTplHint">No custom templates saved yet. Upload a certificate background
-              above to store it on your device.</p>
-          </div>
-        </div>
-
-        <!-- 100% On-Device Privacy & Security Guarantee -->
-        <div class="sidebar-section">
-          <div class="security-card">
-            <div class="security-header">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span>100% On-Device Privacy</span>
-            </div>
-            <p>All recipient data, uploaded templates, and generated certificates are stored and processed exclusively
-              in your device's browser memory. Zero data is sent to or stored on external servers.</p>
-          </div>
-        </div>
-      </div>
-
       <!-- ── TAB 4: BULK MAILER & SMTP ──────────────────── -->
       <div class="tab-content" id="tab-email">
         <div class="sidebar-section">
@@ -536,7 +536,30 @@
 
       <!-- Active Certificate Canvas Container (Scrollable & Pannable Viewport) -->
       <main class="studio-canvas-workspace" id="canvasWrap">
-        <div class="canvas-container" id="canvasContainer">
+        <!-- Canvas Empty State when no template is loaded -->
+        <div class="canvas-empty-state" id="canvasEmptyState">
+          <div class="canvas-empty-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+          </div>
+          <h2 class="canvas-empty-title">Select or Upload Certificate Template</h2>
+          <p class="canvas-empty-desc">Choose the built-in luxury certificate or upload your custom background image to start customizing typography and recipients.</p>
+          <div class="canvas-empty-actions">
+            <button type="button" class="btn-empty-action primary" id="btnEmptyLoadBuiltin">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Use Demo Template</span>
+            </button>
+            <button type="button" class="btn-empty-action secondary" id="btnEmptyUpload">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Upload Custom Template</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-container" id="canvasContainer" style="display:none">
           <canvas id="previewCanvas"></canvas>
         </div>
       </main>
