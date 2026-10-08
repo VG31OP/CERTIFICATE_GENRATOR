@@ -403,7 +403,8 @@
       canvas.width  = w;
       canvas.height = h;
     }
-    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
     ctx.drawImage(state.image, 0, 0, w, h);
 
     const previewRow = state.excelData[state.previewRowIdx] || null;
@@ -494,6 +495,8 @@
       off.width  = state.naturalW;
       off.height = state.naturalH;
       const oc = off.getContext('2d');
+      oc.fillStyle = '#ffffff';
+      oc.fillRect(0, 0, state.naturalW, state.naturalH);
       oc.drawImage(state.image, 0, 0, state.naturalW, state.naturalH);
       for (const baseField of state.fields) {
         const value = rowData[baseField.key] || '';
@@ -1824,8 +1827,8 @@
       state.fields = [
         {
           key: 'name',
-          x: 1000,
-          y: 590,
+          x: 0.50,
+          y: 0.42,
           font: "'Great Vibes', cursive",
           size: 84,
           color: '#000000',
@@ -1842,8 +1845,8 @@
         },
         {
           key: 'course',
-          x: 1000,
-          y: 715,
+          x: 0.50,
+          y: 0.51,
           font: "'Cinzel', serif",
           size: 28,
           color: '#000000',
@@ -1860,8 +1863,8 @@
         },
         {
           key: 'date',
-          x: 500,
-          y: 1115,
+          x: 0.25,
+          y: 0.79,
           font: "'Lato', sans-serif",
           size: 20,
           color: '#000000',
@@ -1878,8 +1881,8 @@
         },
         {
           key: 'cert_id',
-          x: 1000,
-          y: 890,
+          x: 0.50,
+          y: 0.63,
           font: "'Lato', sans-serif",
           size: 16,
           color: '#52525b',
