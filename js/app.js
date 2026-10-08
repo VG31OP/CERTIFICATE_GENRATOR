@@ -30,7 +30,7 @@
   function defaultTypography() {
     return {
       font:          FONTS[0].value,
-      size:          72,
+      size:          700,
       color:         '#000000',
       bold:          false,
       italic:        false,
@@ -215,7 +215,7 @@
     fontDropdown.classList.add('open');
     fontTrigger.classList.add('open');
     FONTS.forEach(f => {
-      document.fonts.load(`${parseInt(fontSize.value) || 72}px ${f.value}`).catch(() => {});
+      document.fonts.load(`${parseInt(fontSize.value) || 700}px ${f.value}`).catch(() => {});
     });
   }
 
@@ -270,7 +270,7 @@
   function readTypographyFromControls() {
     return {
       font:          state.committedFont,
-      size:          parseInt(fontSize.value) || 72,
+      size:          parseInt(fontSize.value) || 700,
       color:         fontColor.value,
       bold:          boldBtn.classList.contains('active'),
       italic:        italicBtn.classList.contains('active'),
