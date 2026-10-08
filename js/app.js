@@ -1961,6 +1961,14 @@
   if (btnHeaderDemo) {
     btnHeaderDemo.addEventListener('click', loadVGDemoProject);
   }
+  const btnLandingDemo = document.getElementById('btnLandingDemo');
+  if (btnLandingDemo) {
+    btnLandingDemo.addEventListener('click', loadVGDemoProject);
+  }
+  const landingUploadCard = document.getElementById('landingUploadCard');
+  if (landingUploadCard) {
+    landingUploadCard.addEventListener('click', () => certFileInput.click());
+  }
   if (btnUseVgTemplate) {
     btnUseVgTemplate.addEventListener('click', () => {
       generateVGCertificateTemplate(() => {

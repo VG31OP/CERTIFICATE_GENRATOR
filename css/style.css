@@ -1267,76 +1267,252 @@ input[type="range"] {
   color: #ffffff;
 }
 
-/* ─── Certificate drop zone ───────────────────────── */
+/* ─── Certificate drop zone & Landing Studio ──────── */
 .cert-drop-zone {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  background: #09090b;
+  background-image: 
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 60%),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.04) 1px, transparent 0);
+  background-size: 100% 100%, 28px 28px;
   z-index: 10;
-  cursor: pointer;
+  padding: 32px 24px;
+  overflow-y: auto;
 }
 
-.cert-drop-zone input[type="file"] {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.cert-drop-inner {
+.landing-container {
+  width: 100%;
+  max-width: 960px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 52px 64px;
-  border: 2px dashed var(--border);
-  border-radius: 18px;
+  gap: 28px;
+  margin: auto;
+}
+
+.landing-hero {
   text-align: center;
-  transition: border-color 0.2s, background 0.2s;
-  pointer-events: none;
-  max-width: 420px;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
-.cert-drop-zone:hover .cert-drop-inner,
-.cert-drop-zone.drag-active .cert-drop-inner {
-  border-color: var(--accent);
-  background: var(--accent-light);
-}
-
-.cert-drop-icon {
-  color: var(--text-muted);
-  opacity: 0.45;
-  transition: opacity 0.2s, color 0.2s;
-  line-height: 0;
-}
-
-.cert-drop-zone:hover .cert-drop-icon,
-.cert-drop-zone.drag-active .cert-drop-icon {
-  color: var(--accent);
-  opacity: 1;
-}
-
-.cert-drop-title {
-  font-size: 21px;
+.landing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--text);
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.cert-drop-sub {
+.landing-badge svg { color: #ffffff; }
+
+.landing-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.landing-desc {
+  font-size: 14px;
+  color: #a1a1aa;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.landing-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .landing-cards-grid { grid-template-columns: 1fr; }
+}
+
+.landing-card {
+  position: relative;
+  background: rgba(18, 18, 20, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid #27272a;
+  border-radius: 14px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.landing-card:hover {
+  border-color: #52525b;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.landing-card.primary-drop-card {
+  border: 1.5px dashed #3f3f46;
+  background: rgba(24, 24, 27, 0.6);
+  cursor: pointer;
+}
+
+.landing-card.primary-drop-card:hover,
+.landing-card.primary-drop-card.drag-active {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.landing-card.primary-drop-card input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.landing-card-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+}
+
+.landing-card:hover .landing-card-icon {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
+}
+
+.landing-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.landing-card-sub {
+  font-size: 12px;
+  color: #a1a1aa;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.format-pills {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.format-pills span {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #d4d4d8;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.btn-landing-action {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 8px;
   font-size: 13px;
-  color: var(--text-muted);
-  margin-top: -4px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  margin-top: 6px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
 }
 
-.cert-drop-formats {
-  font-size: 11px;
-  color: var(--text-muted);
-  opacity: 0.55;
-  letter-spacing: 0.06em;
+.btn-landing-action:hover {
+  background: #e4e4e7;
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.25);
+  transform: scale(1.02);
+}
+
+.btn-landing-action.secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #3f3f46;
+}
+
+.btn-landing-action.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.landing-features-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 28px;
+  width: 100%;
+  padding: 18px 24px;
+  background: rgba(18, 18, 20, 0.5);
+  border: 1px solid #27272a;
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .landing-features-row { grid-template-columns: 1fr; }
+}
+
+.landing-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #a1a1aa;
+}
+
+.landing-feature-item svg {
+  color: #ffffff;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.landing-feature-item b {
+  color: #ffffff;
+  font-weight: 600;
 }
 
 /* ─── Change certificate button ───────────────────── */

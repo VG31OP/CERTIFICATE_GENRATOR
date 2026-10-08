@@ -34,7 +34,7 @@
 <div class="app">
 
   <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar" style="display:none">
+  <aside class="sidebar" id="sidebar">
 
     <!-- Excel Import -->
     <div class="section">
@@ -282,24 +282,94 @@
   <!-- Canvas Area -->
   <main class="canvas-wrap" id="canvasWrap">
 
-    <!-- Certificate drop zone -->
+    <!-- Certificate drop zone & Landing Studio -->
     <div id="certDropZone" class="cert-drop-zone">
-      <input type="file" id="certFileInput" accept="image/png,image/jpeg,image/webp,image/gif" />
-      <div class="cert-drop-inner">
-        <div class="cert-drop-icon">
-          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
-            <rect x="3" y="3" width="18" height="18" rx="2.5"/>
-            <path d="M3 16l5-5 4 4 3-3 6 5.5"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-          </svg>
+      <div class="landing-container">
+        
+        <!-- Hero Header -->
+        <div class="landing-hero">
+          <div class="landing-badge">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>Autonomous Certificate Studio</span>
+          </div>
+          <h2 class="landing-title">Bulk Certificate Generator &amp; Distributor</h2>
+          <p class="landing-desc">Design certificates with real-time typography, map recipient data from Excel/CSV, and batch-distribute personalized certificates via email.</p>
         </div>
-        <div class="cert-drop-title">Drop your certificate here</div>
-        <div class="cert-drop-sub">Drag &amp; drop or click to browse (PNG, JPG, WebP)</div>
-        <div class="cert-drop-or">— OR —</div>
-        <button class="btn-use-vg-template" id="btnUseVgTemplate" type="button">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Use VG Luxury Certificate Template
-        </button>
+
+        <!-- Action Cards Grid -->
+        <div class="landing-cards-grid">
+          
+          <!-- Card 1: Upload Custom Template -->
+          <div class="landing-card primary-drop-card" id="landingUploadCard">
+            <input type="file" id="certFileInput" accept="image/png,image/jpeg,image/webp,image/gif" />
+            <div class="landing-card-icon">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+                <path d="M3 16l5-5 4 4 3-3 6 5.5"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+              </svg>
+            </div>
+            <h3 class="landing-card-title">Upload Custom Template</h3>
+            <p class="landing-card-sub">Drag &amp; drop your certificate image here or click to browse</p>
+            <div class="format-pills">
+              <span>PNG</span>
+              <span>JPG</span>
+              <span>WEBP</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Generate VG Luxury Template -->
+          <div class="landing-card" id="landingTemplateCard">
+            <div class="landing-card-icon">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <h3 class="landing-card-title">Use VG Luxury Template</h3>
+            <p class="landing-card-sub">Generate a 2000×1414 crisp monochrome certificate template instantly</p>
+            <button class="btn-landing-action" id="btnUseVgTemplate" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Generate Template
+            </button>
+          </div>
+
+          <!-- Card 3: 1-Click Interactive Demo -->
+          <div class="landing-card" id="landingDemoCard">
+            <div class="landing-card-icon">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </div>
+            <h3 class="landing-card-title">1-Click Demo Project</h3>
+            <p class="landing-card-sub">Load sample certificate, 4 recipient profiles, and pre-aligned typography fields</p>
+            <button class="btn-landing-action secondary" id="btnLandingDemo" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Launch Demo
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Highlights Row -->
+        <div class="landing-features-row">
+          <div class="landing-feature-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+            <span><b>Excel / CSV Sync</b> — Drag column chips straight to canvas</span>
+          </div>
+          <div class="landing-feature-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            <span><b>20+ Designer Fonts</b> — Luxury calligraphy &amp; serif typography</span>
+          </div>
+          <div class="landing-feature-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span><b>Direct SMTP Mailer</b> — Personalized inbox dispatch</span>
+          </div>
+          <div class="landing-feature-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span><b>Fluid Mouse Zoom</b> — 4% to 500% unrestricted zoom &amp; pan</span>
+          </div>
+        </div>
+
       </div>
     </div>
 
