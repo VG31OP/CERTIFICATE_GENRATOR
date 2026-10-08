@@ -33,23 +33,23 @@
     const h = state.naturalH || 1414;
     const lower = String(key || '').toLowerCase();
 
-    // Recipient Name fields -> prominent display size (~5.8% of template height)
+    // Recipient Name fields -> prominent display size (~6.0% of template height, min 36px)
     if (lower.includes('name') || lower.includes('recipient') || lower.includes('student') || lower.includes('nominee') || lower.includes('person') || lower.includes('attendee')) {
-      return Math.max(14, Math.round(h * 0.058));
+      return Math.max(36, Math.round(h * 0.060));
     }
 
-    // Course / Achievement / Title / Degree / Program -> strong subtitle (~2.6% of template height)
+    // Course / Achievement / Title / Degree / Program -> strong subtitle (~3.8% of template height, min 28px)
     if (lower.includes('course') || lower.includes('title') || lower.includes('award') || lower.includes('event') || lower.includes('program') || lower.includes('degree') || lower.includes('track') || lower.includes('project') || lower.includes('topic')) {
-      return Math.max(12, Math.round(h * 0.026));
+      return Math.max(28, Math.round(h * 0.038));
     }
 
-    // Date / ID / Serial / Signature / Distinction / Honors -> elegant label (~1.8% of template height)
+    // Date / ID / Serial / Signature / Distinction / Honors -> clear, crisp label (~2.8% of template height, min 24px)
     if (lower.includes('date') || lower.includes('id') || lower.includes('cert') || lower.includes('serial') || lower.includes('sign') || lower.includes('distinction') || lower.includes('honors') || lower.includes('rank') || lower.includes('score') || lower.includes('grade') || lower.includes('roll')) {
-      return Math.max(10, Math.round(h * 0.018));
+      return Math.max(24, Math.round(h * 0.028));
     }
 
-    // Generic / Custom Fields -> balanced size (~3.2% of template height)
-    return Math.max(12, Math.round(h * 0.032));
+    // Generic / Custom Fields -> balanced size (~3.4% of template height, min 26px)
+    return Math.max(26, Math.round(h * 0.034));
   }
 
   // ── Default typography for new fields ─────────────────────────────
