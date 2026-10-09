@@ -865,6 +865,120 @@
     canvas.style.cursor = 'crosshair';
   });
 
+  // ── Touch & Multi-Touch Gestures (Single-finger drag/pan, Two-finger pinch zoom) ──
+  let touchStartDist = 0;
+  let touchStartScale = 1;
+  let isTouchPinch = false;
+
+  function getTouchDistance(e) {
+    if (!e.touches || e.touches.length < 2) return 0;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
+  canvas.addEventListener('touchstart', e => {
+    if (!state.image) return;
+
+    if (e.touches.length === 2) {
+      isTouchPinch = true;
+      state.isPanning = false;
+      state.draggingField = false;
+      touchStartDist = getTouchDistance(e);
+      touchStartScale = state.scale;
+      e.preventDefault();
+      return;
+    }
+
+    if (e.touches.length === 1) {
+      isTouchPinch = false;
+      const t = e.touches[0];
+      const c = canvasCoords(e);
+      const cx = c.x * state.naturalW;
+      const cy = c.y * state.naturalH;
+      const hitIdx = hitTestFields(cx, cy);
+
+      if (hitIdx >= 0) {
+        selectField(hitIdx);
+        state.draggingField = true;
+        const baseField = state.fields[hitIdx];
+        const f = getEffectiveField(baseField, state.previewRowIdx);
+        state.dragFieldOffX = c.x - f.x;
+        state.dragFieldOffY = c.y - f.y;
+        e.preventDefault();
+      } else {
+        selectField(-1);
+        state.isPanning = true;
+        state.panStartX = t.clientX;
+        state.panStartY = t.clientY;
+        state.scrollStartX = canvasWrap.scrollLeft;
+        state.scrollStartY = canvasWrap.scrollTop;
+      }
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchmove', e => {
+    if (isTouchPinch && e.touches.length === 2) {
+      e.preventDefault();
+      const currentDist = getTouchDistance(e);
+      if (touchStartDist > 0 && currentDist > 0) {
+        const factor = currentDist / touchStartDist;
+        setZoom(touchStartScale * factor);
+      }
+      return;
+    }
+
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      if (state.isPanning) {
+        e.preventDefault();
+        const dx = t.clientX - state.panStartX;
+        const dy = t.clientY - state.panStartY;
+        canvasWrap.scrollLeft = state.scrollStartX - dx;
+        canvasWrap.scrollTop = state.scrollStartY - dy;
+        return;
+      }
+
+      if (state.draggingField && state.activeFieldIdx >= 0) {
+        e.preventDefault();
+        const c = canvasCoords(e);
+        const newX = Math.max(0, Math.min(1, c.x - state.dragFieldOffX));
+        const newY = Math.max(0, Math.min(1, c.y - state.dragFieldOffY));
+        const baseField = state.fields[state.activeFieldIdx];
+
+        if (state.editingRowIdx >= 0) {
+          if (!state.rowOverrides[state.editingRowIdx]) state.rowOverrides[state.editingRowIdx] = {};
+          if (!state.rowOverrides[state.editingRowIdx][baseField.key]) state.rowOverrides[state.editingRowIdx][baseField.key] = {};
+          state.rowOverrides[state.editingRowIdx][baseField.key].x = newX;
+          state.rowOverrides[state.editingRowIdx][baseField.key].y = newY;
+          updateTableRowHighlights();
+        } else {
+          baseField.x = newX;
+          baseField.y = newY;
+        }
+        render();
+      }
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchend', e => {
+    if (e.touches.length < 2) {
+      isTouchPinch = false;
+      touchStartDist = 0;
+    }
+    if (e.touches.length === 0) {
+      state.isPanning = false;
+      state.draggingField = false;
+    }
+  });
+
+  window.addEventListener('touchcancel', () => {
+    isTouchPinch = false;
+    state.isPanning = false;
+    state.draggingField = false;
+    touchStartDist = 0;
+  });
+
   // Nudge Buttons & Actions
   function nudgeField(dx, dy) {
     if (state.activeFieldIdx < 0) return;
@@ -963,16 +1077,33 @@
       chip.className = 'col-chip';
       chip.draggable = true;
       chip.dataset.key = col;
+      chip.title = `Drag to canvas or tap to add "${col}"`;
       chip.innerHTML = `
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/>
         </svg>
         ${esc(col)}`;
+
+      // Desktop HTML5 drag support
       chip.addEventListener('dragstart', e => {
         e.dataTransfer.setData('text/plain', col);
         chip.classList.add('dragging');
       });
       chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+
+      // Tap / Click to place field (Seamless on mobile and desktop)
+      chip.addEventListener('click', () => {
+        if (!state.image) {
+          if (certFileInput) certFileInput.click();
+          toast('Please select or upload a template first', 'warning');
+          return;
+        }
+        const existingCount = state.fields.length;
+        const initialY = Math.min(0.85, 0.42 + (existingCount * 0.07));
+        addField(col, 0.50, initialY);
+        toast(`"${col}" added to certificate`, 'success');
+      });
+
       columnChipsEl.appendChild(chip);
     });
     columnFieldsSection.style.display = '';
@@ -2076,6 +2207,64 @@
   shadowOpacity.addEventListener('input', () => {
     shadowOpacityVal.textContent = shadowOpacity.value + '%';
     onTypographyChange();
+  });
+
+  // ── Mobile Sidebar Drawer & Responsiveness ─────────────────────────
+  const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+  const btnCloseMobileSidebar = document.getElementById('btnCloseMobileSidebar');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+  const sidebarEl = document.getElementById('sidebar');
+  const btnFloatingMobileTools = document.getElementById('btnFloatingMobileTools');
+
+  function openMobileSidebar() {
+    if (!sidebarEl) return;
+    sidebarEl.classList.add('mobile-open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+    if (btnToggleSidebar) {
+      btnToggleSidebar.classList.add('active');
+      const iconMenu = btnToggleSidebar.querySelector('.icon-menu');
+      const iconClose = btnToggleSidebar.querySelector('.icon-close');
+      if (iconMenu) iconMenu.style.display = 'none';
+      if (iconClose) iconClose.style.display = 'inline-block';
+    }
+  }
+
+  function closeMobileSidebar() {
+    if (!sidebarEl) return;
+    sidebarEl.classList.remove('mobile-open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+    if (btnToggleSidebar) {
+      btnToggleSidebar.classList.remove('active');
+      const iconMenu = btnToggleSidebar.querySelector('.icon-menu');
+      const iconClose = btnToggleSidebar.querySelector('.icon-close');
+      if (iconMenu) iconMenu.style.display = 'inline-block';
+      if (iconClose) iconClose.style.display = 'none';
+    }
+  }
+
+  function toggleMobileSidebar() {
+    if (!sidebarEl) return;
+    if (sidebarEl.classList.contains('mobile-open')) {
+      closeMobileSidebar();
+    } else {
+      openMobileSidebar();
+    }
+  }
+
+  if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleMobileSidebar);
+  if (btnCloseMobileSidebar) btnCloseMobileSidebar.addEventListener('click', closeMobileSidebar);
+  if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+  if (btnFloatingMobileTools) btnFloatingMobileTools.addEventListener('click', openMobileSidebar);
+
+  // Auto-fit zoom on window resize / orientation change (debounced)
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (state.image) {
+        autoFitZoom();
+      }
+    }, 150);
   });
 
   // ── Initialization ─────────────────────────────────────────────────

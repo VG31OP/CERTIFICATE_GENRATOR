@@ -1964,3 +1964,308 @@ kbd {
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #toast.success { border-color: var(--success); color: #ffffff; }
 #toast.warning { border-color: var(--warning); color: #ffffff; }
+
+/* ═════════════════════════════════════════════════════════════════════
+   MOBILE & TABLET RESPONSIVE SYSTEM
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* Header Mobile Sidebar Toggle Button (Hidden on Desktop) */
+.btn-sidebar-toggle {
+  display: none;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: #ffffff;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-sidebar-toggle.active {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+/* Mobile Sidebar Drawer Header */
+.sidebar-mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-mobile-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.btn-sidebar-mobile-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.btn-sidebar-mobile-close:hover {
+  color: #ffffff;
+}
+
+/* Sidebar Backdrop Overlay */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Floating Mobile Quick Tools Pill Button (Canvas Viewport) */
+.btn-floating-mobile-tools {
+  display: none;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(18, 18, 21, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  z-index: 90;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.15s, background 0.15s;
+}
+
+.btn-floating-mobile-tools:active {
+  transform: scale(0.95);
+  background: #ffffff;
+  color: #000000;
+}
+
+/* ─── Media Queries: Large Tablets & Laptops (<= 1024px) ───────────── */
+@media (max-width: 1024px) {
+  .studio-sidebar {
+    width: 320px;
+    min-width: 300px;
+  }
+}
+
+/* ─── Media Queries: Tablets & Mobile Devices (<= 860px) ───────────── */
+@media (max-width: 860px) {
+  .btn-sidebar-toggle {
+    display: inline-flex;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  .sidebar-mobile-header {
+    display: flex;
+  }
+
+  .btn-floating-mobile-tools {
+    display: inline-flex;
+  }
+
+  /* Transform Sidebar into Off-Canvas Slide-In Drawer */
+  .studio-sidebar {
+    position: fixed;
+    top: 52px;
+    bottom: 0;
+    left: 0;
+    width: 340px;
+    max-width: 88vw;
+    z-index: 250;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    border-right: 1px solid var(--border);
+  }
+
+  .studio-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .studio-canvas-stage {
+    width: 100vw;
+    height: 100%;
+  }
+
+  .studio-canvas-workspace {
+    padding: 60px 16px 72px 16px;
+  }
+
+  /* Shortcuts modal trigger hide on touch devices */
+  #btnOpenShortcuts {
+    display: none;
+  }
+
+  /* Responsive HUD */
+  .canvas-floating-hud {
+    top: 10px;
+    gap: 6px;
+  }
+
+  .hud-recipient-label {
+    max-width: 140px;
+    font-size: 10px;
+  }
+}
+
+/* ─── Media Queries: Mobile Phones (<= 640px) ───────────────────────── */
+@media (max-width: 640px) {
+  .studio-header {
+    height: 48px;
+    padding: 0 10px;
+  }
+
+  .studio-app {
+    height: calc(100vh - 48px);
+  }
+
+  .studio-sidebar {
+    top: 48px;
+  }
+
+  .logo-monogram {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .brand-title-row h1 {
+    font-size: 13px;
+  }
+
+  .badge-pro, .system-status-indicator {
+    display: none;
+  }
+
+  /* Compact Header Action Buttons */
+  .header-actions {
+    gap: 6px;
+  }
+
+  .btn-hdr {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  #btnOpenSmtp span:not(.smtp-pill-badge) {
+    display: none;
+  }
+
+  #btnExportMenu span:first-of-type {
+    display: inline;
+  }
+
+  .export-menu {
+    width: 220px;
+    right: -10px;
+  }
+
+  /* Canvas HUD on phones */
+  .canvas-floating-hud {
+    top: 6px;
+    max-width: calc(100% - 12px);
+    gap: 4px;
+  }
+
+  .hud-recipient-stepper, .hud-action-group, .hud-zoom-group {
+    padding: 3px 4px;
+    gap: 2px;
+  }
+
+  .hud-tool-btn, .hud-zoom-btn {
+    height: 24px;
+    min-width: 24px;
+    padding: 0 4px;
+    font-size: 11px;
+  }
+
+  .hud-zoom-btn.text-btn {
+    padding: 0 4px;
+    font-size: 9px;
+  }
+
+  #zoom100 {
+    display: none; /* Hide 1:1 button on very narrow screens */
+  }
+
+  .hud-zoom-level {
+    min-width: 32px;
+    font-size: 10px;
+    padding: 0 3px;
+  }
+
+  .hud-recipient-label {
+    max-width: 100px;
+    font-size: 9px;
+    padding: 0 4px;
+  }
+
+  .hud-btn-reset {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+
+  /* Mobile Modals */
+  .modal {
+    width: 96vw !important;
+    max-height: 92vh !important;
+    padding: 14px !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .modal-title {
+    font-size: 13px !important;
+  }
+
+  .smtp-preset-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .row-2col {
+    grid-template-columns: 1fr !important;
+  }
+
+  .canvas-empty-state {
+    padding: 32px 18px;
+    width: 95%;
+  }
+
+  .canvas-empty-title {
+    font-size: 14px;
+  }
+
+  .canvas-empty-desc {
+    font-size: 11px;
+  }
+}
+

@@ -22,6 +22,18 @@
   <!-- ── Studio Header ─────────────────────────────────── -->
   <header class="studio-header">
     <div class="header-brand">
+      <button class="btn-hdr btn-sidebar-toggle" id="btnToggleSidebar" type="button" aria-label="Toggle Studio Tools Sidebar">
+        <svg class="icon-menu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg class="icon-close" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:none">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        <span>Tools</span>
+      </button>
       <div class="logo-monogram">VG</div>
       <div class="brand-text">
         <div class="brand-title-row">
@@ -121,10 +133,19 @@
   <!-- ── Studio App Body ──────────────────────────────── -->
   <div class="studio-app">
 
+    <!-- Mobile Drawer Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <!-- Left Sidebar Controls -->
     <aside class="studio-sidebar" id="sidebar">
 
-    <!-- Studio Tab Navigation -->
+      <!-- Mobile Sidebar Header Bar -->
+      <div class="sidebar-mobile-header">
+        <span class="sidebar-mobile-title">Studio Control Panel</span>
+        <button type="button" class="btn-sidebar-mobile-close" id="btnCloseMobileSidebar" aria-label="Close Studio Tools">&times;</button>
+      </div>
+
+      <!-- Studio Tab Navigation -->
       <div class="sidebar-tabs">
         <button type="button" class="sidebar-tab active" data-tab="tab-templates" id="tabBtnTemplates">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -542,6 +563,14 @@
           <canvas id="previewCanvas"></canvas>
         </div>
       </main>
+
+      <!-- Floating Mobile Tools Toggle Pill Button -->
+      <button class="btn-floating-mobile-tools" id="btnFloatingMobileTools" type="button" aria-label="Open Studio Tools Drawer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span>Studio Tools</span>
+      </button>
 
       <!-- Batch ZIP Progress Bar (Modal/Floating) -->
       <div class="bulk-progress-modal" id="progressWrap">
