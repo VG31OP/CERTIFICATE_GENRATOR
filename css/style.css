@@ -2189,13 +2189,6 @@ kbd {
     box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.6);
   }
 
-  .sidebar-mobile-header {
-    display: none;
-  }
-
-  .sidebar-backdrop {
-    display: none;
-  }
 
   .sidebar-tabs {
     flex-shrink: 0;
