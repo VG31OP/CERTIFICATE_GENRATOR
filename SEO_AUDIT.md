@@ -1,6 +1,6 @@
 # Technical SEO Audit & Launch Strategy
 
-**Domain:** `https://certificate-gen-pvg.onrender.com/`  
+**Domain:** `https://certificate.shiroya.in/`  
 **Application:** VG Certificate Studio  
 **Audit Date:** October 9, 2026  
 

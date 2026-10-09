@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://certificate-gen-pvg.onrender.com/sitemap.xml
+Sitemap: https://certificate.shiroya.in/sitemap.xml
