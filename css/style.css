@@ -2085,7 +2085,56 @@ kbd {
 @media (max-width: 860px) {
   .studio-header {
     height: 48px;
-    padding: 0 10px;
+    padding: 0 12px;
+    background: #111114;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-brand {
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .logo-monogram {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  .brand-title-row {
+    gap: 6px;
+  }
+
+  .brand-title-row h1 {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .badge-pro, .system-status-indicator, .brand-subtitle {
+    display: none !important;
+  }
+
+  .header-actions {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .btn-hdr {
+    padding: 5px 9px;
+    font-size: 11px;
+    gap: 5px;
+  }
+
+  .hdr-export-label {
+    display: inline;
+  }
+
+  #btnOpenShortcuts {
+    display: none;
   }
 
   .studio-app {
@@ -2206,15 +2255,6 @@ kbd {
     bottom: 24px;
     right: 20px;
   }
-
-  /* Hide shortcuts button on touch screens */
-  #btnOpenShortcuts {
-    display: none;
-  }
-
-  .btn-sidebar-toggle {
-    display: none;
-  }
 }
 
 /* ─── Media Queries: Mobile Phones (<= 640px) ───────────────────────── */
@@ -2222,38 +2262,21 @@ kbd {
   .logo-monogram {
     width: 26px;
     height: 26px;
-    font-size: 12px;
-  }
-
-  .brand-title-row h1 {
-    font-size: 13px;
-  }
-
-  .badge-pro, .system-status-indicator {
-    display: none;
-  }
-
-  /* Compact Header Action Buttons */
-  .header-actions {
-    gap: 6px;
-  }
-
-  .btn-hdr {
-    padding: 5px 8px;
     font-size: 11px;
   }
 
-  #btnOpenSmtp span:not(.smtp-pill-badge) {
-    display: none;
+  .brand-title-row h1 {
+    font-size: 12.5px;
+    max-width: 140px;
   }
 
-  #btnExportMenu span:first-of-type {
-    display: inline;
+  .hdr-btn-text {
+    display: none;
   }
 
   .export-menu {
     width: 220px;
-    right: -10px;
+    right: 0;
   }
 
   /* Canvas HUD on phones */
