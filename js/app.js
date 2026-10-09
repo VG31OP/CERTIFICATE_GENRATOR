@@ -208,6 +208,8 @@
   const btnDownloadPng = document.getElementById('btnDownloadPng');
   const btnDownloadPdf = document.getElementById('btnDownloadPdf');
   const btnDownloadZip = document.getElementById('btnDownloadZip');
+  const btnDownloadPdfZip = document.getElementById('btnDownloadPdfZip');
+  const btnDownloadPdfCombined = document.getElementById('btnDownloadPdfCombined');
   const btnSendAllEmails = document.getElementById('btnSendAllEmails');
 
   // Modals
@@ -1831,11 +1833,97 @@
     progressLbl.textContent = 'Compressing into ZIP…';
     await new Promise(r => setTimeout(r, 50));
     const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
-    triggerDownload(zipBlob, 'VG_Certificates_Batch.zip');
+    triggerDownload(zipBlob, 'VG_Certificates_PNG_Batch.zip');
     progressWrap.classList.remove('visible');
     progressFill.style.width = '0%';
-    toast(`${rows.length} certificates exported to ZIP!`, 'success');
+    toast(`${rows.length} PNG certificates exported to ZIP!`, 'success');
   });
+
+  if (btnDownloadPdfZip) {
+    btnDownloadPdfZip.addEventListener('click', async () => {
+      exportDropdownWrap.classList.remove('open');
+      const rows = state.excelData;
+      if (!rows.length) { toast('Upload recipient data or load sample data first', 'warning'); return; }
+      if (!state.fields.length) { toast('Place at least one field on the canvas first', 'warning'); return; }
+      if (typeof JSZip === 'undefined') { toast('JSZip library loading...', 'warning'); return; }
+      if (typeof window.jspdf === 'undefined') { toast('jsPDF library loading...', 'warning'); return; }
+
+      progressWrap.classList.add('visible');
+      const zip = new JSZip();
+      const { jsPDF } = window.jspdf;
+      const orientation = state.naturalW >= state.naturalH ? 'landscape' : 'portrait';
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const label = row.name || `recipient_${i + 1}`;
+        progressFill.style.width = `${(i / rows.length) * 100}%`;
+        progressLbl.textContent = `Rendering PDF ${i + 1}/${rows.length}: ${label}`;
+        
+        const blob = await generateCertBlob(row, i);
+        const base64 = await blobToBase64(blob);
+        const pdf = new jsPDF({
+          orientation,
+          unit: 'px',
+          format: [state.naturalW, state.naturalH]
+        });
+        pdf.addImage(`data:image/png;base64,${base64}`, 'PNG', 0, 0, state.naturalW, state.naturalH);
+        const pdfBlob = pdf.output('blob');
+        zip.file(`${safeName(label)}_${i + 1}.pdf`, pdfBlob);
+        await new Promise(r => setTimeout(r, 0));
+      }
+
+      progressFill.style.width = '100%';
+      progressLbl.textContent = 'Compressing PDFs into ZIP…';
+      await new Promise(r => setTimeout(r, 50));
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+      triggerDownload(zipBlob, 'VG_Certificates_PDF_Batch.zip');
+      progressWrap.classList.remove('visible');
+      progressFill.style.width = '0%';
+      toast(`${rows.length} PDF certificates exported to ZIP!`, 'success');
+    });
+  }
+
+  if (btnDownloadPdfCombined) {
+    btnDownloadPdfCombined.addEventListener('click', async () => {
+      exportDropdownWrap.classList.remove('open');
+      const rows = state.excelData;
+      if (!rows.length) { toast('Upload recipient data or load sample data first', 'warning'); return; }
+      if (!state.fields.length) { toast('Place at least one field on the canvas first', 'warning'); return; }
+      if (typeof window.jspdf === 'undefined') { toast('jsPDF library loading...', 'warning'); return; }
+
+      progressWrap.classList.add('visible');
+      const { jsPDF } = window.jspdf;
+      const orientation = state.naturalW >= state.naturalH ? 'landscape' : 'portrait';
+      const pdf = new jsPDF({
+        orientation,
+        unit: 'px',
+        format: [state.naturalW, state.naturalH]
+      });
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const label = row.name || `recipient_${i + 1}`;
+        progressFill.style.width = `${(i / rows.length) * 100}%`;
+        progressLbl.textContent = `Building PDF Page ${i + 1}/${rows.length}: ${label}`;
+        
+        const blob = await generateCertBlob(row, i);
+        const base64 = await blobToBase64(blob);
+        if (i > 0) {
+          pdf.addPage([state.naturalW, state.naturalH], orientation);
+        }
+        pdf.addImage(`data:image/png;base64,${base64}`, 'PNG', 0, 0, state.naturalW, state.naturalH);
+        await new Promise(r => setTimeout(r, 0));
+      }
+
+      progressFill.style.width = '100%';
+      progressLbl.textContent = 'Saving merged document…';
+      await new Promise(r => setTimeout(r, 50));
+      pdf.save('VG_Certificates_All_Combined.pdf');
+      progressWrap.classList.remove('visible');
+      progressFill.style.width = '0%';
+      toast(`Merged multi-page PDF generated (${rows.length} pages)!`, 'success');
+    });
+  }
 
   btnSendAllEmails.addEventListener('click', () => {
     exportDropdownWrap.classList.remove('open');

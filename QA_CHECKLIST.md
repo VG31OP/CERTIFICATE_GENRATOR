@@ -40,7 +40,9 @@
 ## 3. Export Engine
 - [x] **Single PNG Export:** Generates full-resolution PNG directly in browser.
 - [x] **Single PDF Export:** Compiles vector PDF with embedded high-resolution raster canvas via jsPDF.
-- [x] **Bulk ZIP Generation:** Asynchronously renders all recipient certificates and packages into compressed ZIP file with progress bar.
+- [x] **Batch PNG ZIP:** Asynchronously renders all recipient certificates into PNGs packaged in a compressed ZIP file.
+- [x] **Batch PDF ZIP:** Asynchronously renders individual print-ready PDF certificates for all recipients packaged into a ZIP archive.
+- [x] **Merged Multi-Page PDF:** Assembles all recipient certificates into a single combined multi-page PDF document ready for print.
 
 ---
 
