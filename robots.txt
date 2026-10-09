@@ -1,0 +1,6 @@
+# robots.txt for VG Certificate Studio
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://certificate-gen-pvg.onrender.com/sitemap.xml
