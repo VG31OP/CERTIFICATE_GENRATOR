@@ -795,28 +795,20 @@
     }, { passive: false });
   }
 
-  // Panning & Dragging
-  function canvasCoords(e) {
+  // ── Unified Pointer Engine (Mouse, Touch, Stylus, Trackpad) ───────
+  function getPointerCanvasCoords(e) {
     const rect = canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return { x: 0.5, y: 0.5 };
-    let clientX = e.clientX;
-    let clientY = e.clientY;
-    if (e.touches && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else if (e.changedTouches && e.changedTouches.length > 0) {
-      clientX = e.changedTouches[0].clientX;
-      clientY = e.changedTouches[0].clientY;
-    }
     return {
-      x: Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)),
-      y: Math.max(0, Math.min(1, (clientY - rect.top) / rect.height)),
+      x: Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)),
+      y: Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)),
     };
   }
 
-  function startPanning(e) {
+  function startPointerPan(e) {
     if (!state.image) return;
     state.isPanning = true;
+    state.draggingField = false;
     state.panStartX = e.clientX;
     state.panStartY = e.clientY;
     state.scrollStartX = canvasWrap.scrollLeft;
@@ -824,100 +816,20 @@
     canvasWrap.style.cursor = 'grabbing';
   }
 
-  canvas.addEventListener('mousedown', e => {
-    if (e.button === 2) return;
-    if (e.button === 1 || e.altKey || e.shiftKey || e.spaceKey) {
-      startPanning(e);
-      e.preventDefault();
-      return;
-    }
-    if (e.button === 0) {
-      const c = canvasCoords(e);
-      const cx = c.x * state.naturalW;
-      const cy = c.y * state.naturalH;
-      const hitIdx = hitTestFields(cx, cy);
-
-      if (hitIdx >= 0) {
-        selectField(hitIdx);
-        state.draggingField = true;
-        const baseField = state.fields[hitIdx];
-        const f = getEffectiveField(baseField, state.previewRowIdx);
-        state.dragFieldOffX = c.x - f.x;
-        state.dragFieldOffY = c.y - f.y;
-        canvas.style.cursor = 'grabbing';
-      } else {
-        selectField(-1);
-        startPanning(e);
-      }
-      e.preventDefault();
-    }
-  });
-
-  window.addEventListener('mousemove', e => {
-    if (state.isPanning) {
-      const dx = e.clientX - state.panStartX;
-      const dy = e.clientY - state.panStartY;
-      canvasWrap.scrollLeft = state.scrollStartX - dx;
-      canvasWrap.scrollTop = state.scrollStartY - dy;
-      return;
-    }
-    if (!state.draggingField || state.activeFieldIdx < 0) return;
-    const c = canvasCoords(e);
-    const newX = Math.max(0, Math.min(1, c.x - state.dragFieldOffX));
-    const newY = Math.max(0, Math.min(1, c.y - state.dragFieldOffY));
-    const baseField = state.fields[state.activeFieldIdx];
-
-    if (state.editingRowIdx >= 0) {
-      if (!state.rowOverrides[state.editingRowIdx]) state.rowOverrides[state.editingRowIdx] = {};
-      if (!state.rowOverrides[state.editingRowIdx][baseField.key]) state.rowOverrides[state.editingRowIdx][baseField.key] = {};
-      state.rowOverrides[state.editingRowIdx][baseField.key].x = newX;
-      state.rowOverrides[state.editingRowIdx][baseField.key].y = newY;
-      updateTableRowHighlights();
-    } else {
-      baseField.x = newX;
-      baseField.y = newY;
-    }
-    render();
-  });
-
-  window.addEventListener('mouseup', () => {
-    if (state.isPanning) {
-      state.isPanning = false;
-      canvasWrap.style.cursor = '';
-    }
-    state.draggingField = false;
-    canvas.style.cursor = 'crosshair';
-  });
-
-  // ── Touch & Multi-Touch Gestures (Single-finger drag/pan, Two-finger pinch zoom) ──
-  let touchStartDist = 0;
-  let touchStartScale = 1;
-  let isTouchPinch = false;
-
-  function getTouchDistance(e) {
-    if (!e.touches || e.touches.length < 2) return 0;
-    const dx = e.touches[0].clientX - e.touches[1].clientX;
-    const dy = e.touches[0].clientY - e.touches[1].clientY;
-    return Math.hypot(dx, dy);
-  }
-
-  function handleCanvasTouchStart(e) {
+  canvas.addEventListener('pointerdown', e => {
     if (!state.image) return;
+    if (e.button === 2) return; // Ignore right click context menu
 
-    if (e.touches.length === 2) {
-      isTouchPinch = true;
-      state.isPanning = false;
-      state.draggingField = false;
-      touchStartDist = getTouchDistance(e);
-      touchStartScale = state.scale;
+    // If middle click or holding pan modifiers
+    if (e.button === 1 || e.altKey || e.shiftKey || e.spaceKey) {
+      startPointerPan(e);
+      try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
       e.preventDefault();
       return;
     }
 
-    if (e.touches.length === 1) {
-      isTouchPinch = false;
-      const t = e.touches[0];
-      const c = canvasCoords(e);
+    if (e.button === 0 || e.pointerType === 'touch' || e.pointerType === 'pen') {
+      const c = getPointerCanvasCoords(e);
       const cx = c.x * state.naturalW;
       const cy = c.y * state.naturalH;
       const hitIdx = hitTestFields(cx, cy);
@@ -930,36 +842,22 @@
         const f = getEffectiveField(baseField, state.previewRowIdx);
         state.dragFieldOffX = c.x - f.x;
         state.dragFieldOffY = c.y - f.y;
+        canvas.style.cursor = 'grabbing';
+        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
         e.preventDefault();
       } else {
         selectField(-1);
-        state.draggingField = false;
-        state.isPanning = true;
-        state.panStartX = t.clientX;
-        state.panStartY = t.clientY;
-        state.scrollStartX = canvasWrap.scrollLeft;
-        state.scrollStartY = canvasWrap.scrollTop;
+        startPointerPan(e);
+        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+        e.preventDefault();
       }
     }
-  }
+  });
 
-  canvas.addEventListener('touchstart', handleCanvasTouchStart, { passive: false });
-  if (canvasContainer) canvasContainer.addEventListener('touchstart', handleCanvasTouchStart, { passive: false });
-
-  window.addEventListener('touchmove', e => {
-    if (isTouchPinch && e.touches.length === 2) {
+  window.addEventListener('pointermove', e => {
+    if (state.draggingField && state.activeFieldIdx >= 0) {
       e.preventDefault();
-      const currentDist = getTouchDistance(e);
-      if (touchStartDist > 0 && currentDist > 0) {
-        const factor = currentDist / touchStartDist;
-        setZoom(touchStartScale * factor);
-      }
-      return;
-    }
-
-    if (state.draggingField && state.activeFieldIdx >= 0 && e.touches.length > 0) {
-      e.preventDefault();
-      const c = canvasCoords(e);
+      const c = getPointerCanvasCoords(e);
       const newX = Math.max(0.01, Math.min(0.99, c.x - state.dragFieldOffX));
       const newY = Math.max(0.01, Math.min(0.99, c.y - state.dragFieldOffY));
       const baseField = state.fields[state.activeFieldIdx];
@@ -978,13 +876,62 @@
       return;
     }
 
-    if (state.isPanning && e.touches.length > 0) {
+    if (state.isPanning) {
       e.preventDefault();
-      const t = e.touches[0];
-      const dx = t.clientX - state.panStartX;
-      const dy = t.clientY - state.panStartY;
+      const dx = e.clientX - state.panStartX;
+      const dy = e.clientY - state.panStartY;
       canvasWrap.scrollLeft = state.scrollStartX - dx;
       canvasWrap.scrollTop = state.scrollStartY - dy;
+    }
+  });
+
+  function stopPointerAction(e) {
+    if (state.isPanning) {
+      state.isPanning = false;
+      canvasWrap.style.cursor = '';
+    }
+    if (state.draggingField) {
+      state.draggingField = false;
+      canvas.style.cursor = 'crosshair';
+    }
+    if (e && e.pointerId) {
+      try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+  }
+
+  window.addEventListener('pointerup', stopPointerAction);
+  window.addEventListener('pointercancel', stopPointerAction);
+
+  // ── Multi-Touch 2-Finger Pinch-to-Zoom ─────────────────────────────
+  let touchStartDist = 0;
+  let touchStartScale = 1;
+  let isTouchPinch = false;
+
+  function getTouchDistance(e) {
+    if (!e.touches || e.touches.length < 2) return 0;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
+  canvasWrap.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      isTouchPinch = true;
+      state.isPanning = false;
+      state.draggingField = false;
+      touchStartDist = getTouchDistance(e);
+      touchStartScale = state.scale;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchmove', e => {
+    if (isTouchPinch && e.touches.length === 2) {
+      e.preventDefault();
+      const curDist = getTouchDistance(e);
+      if (touchStartDist > 0 && curDist > 0) {
+        setZoom(touchStartScale * (curDist / touchStartDist));
+      }
     }
   }, { passive: false });
 
@@ -993,16 +940,10 @@
       isTouchPinch = false;
       touchStartDist = 0;
     }
-    if (e.touches.length === 0) {
-      state.isPanning = false;
-      state.draggingField = false;
-    }
   });
 
   window.addEventListener('touchcancel', () => {
     isTouchPinch = false;
-    state.isPanning = false;
-    state.draggingField = false;
     touchStartDist = 0;
   });
 
