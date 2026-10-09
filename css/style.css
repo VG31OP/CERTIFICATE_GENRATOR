@@ -1966,86 +1966,84 @@ kbd {
 #toast.warning { border-color: var(--warning); color: #ffffff; }
 
 /* ═════════════════════════════════════════════════════════════════════
-   MOBILE & TABLET RESPONSIVE SYSTEM
+   MOBILE & TABLET RESPONSIVE SYSTEM (LIVE SPLIT VIEW)
    ═════════════════════════════════════════════════════════════════════ */
 
-/* Header Mobile Sidebar Toggle Button (Hidden on Desktop) */
-.btn-sidebar-toggle {
-  display: none;
+/* Stepper & Swatches UI Components */
+.stepper-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-stepper {
   background: var(--surface2);
   border: 1px solid var(--border);
   color: #ffffff;
-  padding: 6px 10px;
-  font-size: 11px;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
   font-weight: 700;
-  gap: 6px;
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
 
-.btn-sidebar-toggle.active {
+.btn-stepper:active {
+  transform: scale(0.92);
   background: #ffffff;
   color: #000000;
-  border-color: #ffffff;
 }
 
-/* Mobile Sidebar Drawer Header */
-.sidebar-mobile-header {
-  display: none;
+.stepper-input-wrap input[type="number"] {
+  flex: 1;
+  text-align: center;
+}
+
+.color-swatches {
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 4px 0;
 }
 
-.sidebar-mobile-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.01em;
-}
-
-.btn-sidebar-mobile-close {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 22px;
-  line-height: 1;
+.color-swatch-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: color 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  touch-action: manipulation;
+  transition: transform 0.15s, border-color 0.15s;
 }
 
-.btn-sidebar-mobile-close:hover {
-  color: #ffffff;
+.color-swatch-btn:active, .color-swatch-btn:hover {
+  transform: scale(1.15);
 }
 
-/* Sidebar Backdrop Overlay */
-.sidebar-backdrop {
+.color-swatch-btn.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.btn-view-toggle {
   display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  z-index: 199;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
 }
 
-.sidebar-backdrop.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Floating Mobile Quick Tools Pill Button (Canvas Viewport) */
+/* Floating Quick Edit Pill (shown only when canvas is maximized) */
 .btn-floating-mobile-tools {
   display: none;
   position: absolute;
   bottom: 20px;
   right: 20px;
-  background: rgba(18, 18, 21, 0.92);
+  background: rgba(18, 18, 21, 0.94);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
@@ -2075,84 +2073,144 @@ kbd {
   }
 }
 
-/* ─── Media Queries: Tablets & Mobile Devices (<= 860px) ───────────── */
+/* ─── Media Queries: Tablets & Mobile Devices Split View (<= 860px) ── */
 @media (max-width: 860px) {
-  .btn-sidebar-toggle {
-    display: inline-flex;
-  }
-
-  .sidebar-backdrop {
-    display: block;
-  }
-
-  .sidebar-mobile-header {
-    display: flex;
-  }
-
-  .btn-floating-mobile-tools {
-    display: inline-flex;
-  }
-
-  /* Transform Sidebar into Off-Canvas Slide-In Drawer */
-  .studio-sidebar {
-    position: fixed;
-    top: 52px;
-    bottom: 0;
-    left: 0;
-    width: 340px;
-    max-width: 88vw;
-    z-index: 250;
-    box-shadow: var(--shadow-lg);
-    transform: translateX(-100%);
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-    border-right: 1px solid var(--border);
-  }
-
-  .studio-sidebar.mobile-open {
-    transform: translateX(0);
-  }
-
-  .studio-canvas-stage {
-    width: 100vw;
-    height: 100%;
-  }
-
-  .studio-canvas-workspace {
-    padding: 60px 16px 72px 16px;
-  }
-
-  /* Shortcuts modal trigger hide on touch devices */
-  #btnOpenShortcuts {
-    display: none;
-  }
-
-  /* Responsive HUD */
-  .canvas-floating-hud {
-    top: 10px;
-    gap: 6px;
-  }
-
-  .hud-recipient-label {
-    max-width: 140px;
-    font-size: 10px;
-  }
-}
-
-/* ─── Media Queries: Mobile Phones (<= 640px) ───────────────────────── */
-@media (max-width: 640px) {
   .studio-header {
     height: 48px;
     padding: 0 10px;
   }
 
   .studio-app {
+    display: flex;
+    flex-direction: column;
     height: calc(100vh - 48px);
+    overflow: hidden;
   }
 
+  /* Top Viewport: Certificate Stage (Live Canvas) */
+  .studio-canvas-stage {
+    flex: 0 0 43vh;
+    min-height: 200px;
+    max-height: 48vh;
+    width: 100vw;
+    position: relative;
+    border-bottom: 2px solid var(--border);
+    background: #09090b;
+    transition: flex 0.2s ease;
+  }
+
+  .studio-canvas-workspace {
+    padding: 38px 8px 8px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Floating HUD on Mobile */
+  .canvas-floating-hud {
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 10px);
+    max-width: 520px;
+    padding: 3px 6px;
+    gap: 4px;
+    border-radius: var(--radius-full);
+  }
+
+  .hud-recipient-label {
+    max-width: 110px;
+    font-size: 9px;
+  }
+
+  .btn-view-toggle {
+    display: inline-flex !important;
+  }
+
+  /* Bottom Viewport: Studio Control Panel Dock */
   .studio-sidebar {
-    top: 48px;
+    flex: 1 1 auto;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: static;
+    transform: none !important;
+    border-right: none;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.6);
   }
 
+  .sidebar-mobile-header {
+    display: none;
+  }
+
+  .sidebar-backdrop {
+    display: none;
+  }
+
+  .sidebar-tabs {
+    flex-shrink: 0;
+    display: flex;
+    overflow-x: auto;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2px;
+    gap: 2px;
+  }
+
+  .sidebar-tab {
+    flex: 1;
+    min-width: 70px;
+    padding: 10px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .sidebar-tab svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px 28px 14px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Full Screen Canvas Mode */
+  .studio-app.canvas-maximized .studio-canvas-stage {
+    flex: 1 1 100%;
+    max-height: 100%;
+    border-bottom: none;
+  }
+
+  .studio-app.canvas-maximized .studio-sidebar {
+    display: none;
+  }
+
+  .studio-app.canvas-maximized .btn-floating-mobile-tools {
+    display: inline-flex;
+    bottom: 24px;
+    right: 20px;
+  }
+
+  /* Hide shortcuts button on touch screens */
+  #btnOpenShortcuts {
+    display: none;
+  }
+
+  .btn-sidebar-toggle {
+    display: none;
+  }
+}
+
+/* ─── Media Queries: Mobile Phones (<= 640px) ───────────────────────── */
+@media (max-width: 640px) {
   .logo-monogram {
     width: 26px;
     height: 26px;
@@ -2191,12 +2249,6 @@ kbd {
   }
 
   /* Canvas HUD on phones */
-  .canvas-floating-hud {
-    top: 6px;
-    max-width: calc(100% - 12px);
-    gap: 4px;
-  }
-
   .hud-recipient-stepper, .hud-action-group, .hud-zoom-group {
     padding: 3px 4px;
     gap: 2px;
@@ -2225,9 +2277,9 @@ kbd {
   }
 
   .hud-recipient-label {
-    max-width: 100px;
+    max-width: 85px;
     font-size: 9px;
-    padding: 0 4px;
+    padding: 0 3px;
   }
 
   .hud-btn-reset {
@@ -2256,12 +2308,12 @@ kbd {
   }
 
   .canvas-empty-state {
-    padding: 32px 18px;
+    padding: 24px 14px;
     width: 95%;
   }
 
   .canvas-empty-title {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .canvas-empty-desc {

@@ -319,7 +319,11 @@
           <div class="row-2col">
             <div class="field-group">
               <label>Size (px)</label>
-              <input type="number" id="fontSize" value="82" min="8" max="2500" step="1" />
+              <div class="stepper-input-wrap">
+                <button type="button" class="btn-stepper" id="btnDecFontSize" title="Decrease Size (−4px)">−</button>
+                <input type="number" id="fontSize" value="82" min="8" max="2500" step="1" />
+                <button type="button" class="btn-stepper" id="btnIncFontSize" title="Increase Size (+4px)">+</button>
+              </div>
             </div>
             <div class="field-group">
               <label>Color</label>
@@ -327,6 +331,20 @@
                 <input type="color" id="fontColor" value="#000000" />
                 <input type="text" id="fontColorHex" value="#000000" placeholder="#hex" maxlength="7" />
               </div>
+            </div>
+          </div>
+
+          <!-- Quick Palette Swatches -->
+          <div class="field-group">
+            <label>Quick Colors</label>
+            <div class="color-swatches" id="colorSwatches">
+              <button type="button" class="color-swatch-btn active" data-color="#000000" style="background:#000000" title="Pure Black"></button>
+              <button type="button" class="color-swatch-btn" data-color="#1c1c1f" style="background:#1c1c1f" title="Charcoal"></button>
+              <button type="button" class="color-swatch-btn" data-color="#c59b27" style="background:#c59b27" title="Certificate Gold"></button>
+              <button type="button" class="color-swatch-btn" data-color="#0f2b5c" style="background:#0f2b5c" title="Navy Blue"></button>
+              <button type="button" class="color-swatch-btn" data-color="#800020" style="background:#800020" title="Burgundy"></button>
+              <button type="button" class="color-swatch-btn" data-color="#14522d" style="background:#14522d" title="Emerald"></button>
+              <button type="button" class="color-swatch-btn" data-color="#ffffff" style="background:#ffffff; border: 1px solid #444" title="Pure White"></button>
             </div>
           </div>
 
@@ -534,6 +552,9 @@
           <button class="hud-zoom-btn" id="zoomIn" type="button" title="Zoom In (Scroll Up)">+</button>
           <button class="hud-zoom-btn text-btn" id="zoomFit" type="button" title="Fit to Screen">Fit</button>
           <button class="hud-zoom-btn text-btn" id="zoom100" type="button" title="100% Actual Resolution">1:1</button>
+          <button class="hud-zoom-btn text-btn btn-view-toggle" id="btnToggleViewMode" type="button" title="Toggle Maximize Canvas / Split View">
+            <span id="viewModeLabel">Max</span>
+          </button>
         </div>
 
       </div>

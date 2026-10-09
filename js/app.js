@@ -440,6 +440,11 @@
     fontColor.value = t.color || '#000000';
     fontColorHex.value = t.color || '#000000';
 
+    // Highlight matching quick color swatch
+    document.querySelectorAll('.color-swatch-btn').forEach(s => {
+      s.classList.toggle('active', (s.dataset.color || '').toLowerCase() === (t.color || '').toLowerCase());
+    });
+
     boldBtn.classList.toggle('active', !!t.bold);
     italicBtn.classList.toggle('active', !!t.italic);
 
@@ -514,6 +519,14 @@
       activeFieldLabel.textContent = isCustom ? (baseField.customValue || baseField.key) : baseField.key;
       activeFieldLabel.classList.add('has-field');
       btnRemoveField.style.display = '';
+
+      // On mobile / tablet screens, automatically switch to the Style & Text tab so controls are immediately visible
+      if (window.innerWidth <= 860) {
+        const tabStyleBtn = document.getElementById('tabBtnTypography');
+        if (tabStyleBtn && !tabStyleBtn.classList.contains('active')) {
+          tabStyleBtn.click();
+        }
+      }
     } else {
       state.activeFieldIdx = -1;
       if (customTextInputGroup) customTextInputGroup.style.display = 'none';
@@ -2209,52 +2222,57 @@
     onTypographyChange();
   });
 
-  // ── Mobile Sidebar Drawer & Responsiveness ─────────────────────────
-  const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-  const btnCloseMobileSidebar = document.getElementById('btnCloseMobileSidebar');
-  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-  const sidebarEl = document.getElementById('sidebar');
+  // ── Font Size Steppers (− / + buttons) ──────────────────────────────
+  const btnDecFontSize = document.getElementById('btnDecFontSize');
+  const btnIncFontSize = document.getElementById('btnIncFontSize');
+  if (btnDecFontSize) {
+    btnDecFontSize.addEventListener('click', () => {
+      const cur = parseInt(fontSize.value, 10) || 40;
+      fontSize.value = Math.max(8, cur - 4);
+      onTypographyChange();
+    });
+  }
+  if (btnIncFontSize) {
+    btnIncFontSize.addEventListener('click', () => {
+      const cur = parseInt(fontSize.value, 10) || 40;
+      fontSize.value = Math.min(2500, cur + 4);
+      onTypographyChange();
+    });
+  }
+
+  // ── Quick Color Swatches ───────────────────────────────────────────
+  document.querySelectorAll('.color-swatch-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = btn.dataset.color;
+      if (!c) return;
+      fontColor.value = c;
+      fontColorHex.value = c;
+      document.querySelectorAll('.color-swatch-btn').forEach(b => b.classList.toggle('active', b === btn));
+      onTypographyChange();
+    });
+  });
+
+  // ── View Mode Toggle (Maximize Canvas / Live Split) ─────────────────
+  const btnToggleViewMode = document.getElementById('btnToggleViewMode');
+  const viewModeLabel = document.getElementById('viewModeLabel');
+  const studioApp = document.querySelector('.studio-app');
   const btnFloatingMobileTools = document.getElementById('btnFloatingMobileTools');
 
-  function openMobileSidebar() {
-    if (!sidebarEl) return;
-    sidebarEl.classList.add('mobile-open');
-    if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
-    if (btnToggleSidebar) {
-      btnToggleSidebar.classList.add('active');
-      const iconMenu = btnToggleSidebar.querySelector('.icon-menu');
-      const iconClose = btnToggleSidebar.querySelector('.icon-close');
-      if (iconMenu) iconMenu.style.display = 'none';
-      if (iconClose) iconClose.style.display = 'inline-block';
-    }
+  function toggleCanvasViewMode() {
+    if (!studioApp) return;
+    const isMax = studioApp.classList.toggle('canvas-maximized');
+    if (viewModeLabel) viewModeLabel.textContent = isMax ? 'Split' : 'Max';
+    setTimeout(() => {
+      autoFitZoom();
+    }, 120);
   }
 
-  function closeMobileSidebar() {
-    if (!sidebarEl) return;
-    sidebarEl.classList.remove('mobile-open');
-    if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
-    if (btnToggleSidebar) {
-      btnToggleSidebar.classList.remove('active');
-      const iconMenu = btnToggleSidebar.querySelector('.icon-menu');
-      const iconClose = btnToggleSidebar.querySelector('.icon-close');
-      if (iconMenu) iconMenu.style.display = 'inline-block';
-      if (iconClose) iconClose.style.display = 'none';
-    }
-  }
-
-  function toggleMobileSidebar() {
-    if (!sidebarEl) return;
-    if (sidebarEl.classList.contains('mobile-open')) {
-      closeMobileSidebar();
-    } else {
-      openMobileSidebar();
-    }
-  }
-
-  if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleMobileSidebar);
-  if (btnCloseMobileSidebar) btnCloseMobileSidebar.addEventListener('click', closeMobileSidebar);
-  if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeMobileSidebar);
-  if (btnFloatingMobileTools) btnFloatingMobileTools.addEventListener('click', openMobileSidebar);
+  if (btnToggleViewMode) btnToggleViewMode.addEventListener('click', toggleCanvasViewMode);
+  if (btnFloatingMobileTools) btnFloatingMobileTools.addEventListener('click', () => {
+    if (studioApp) studioApp.classList.remove('canvas-maximized');
+    if (viewModeLabel) viewModeLabel.textContent = 'Max';
+    setTimeout(() => autoFitZoom(), 120);
+  });
 
   // Auto-fit zoom on window resize / orientation change (debounced)
   let resizeTimer = null;
