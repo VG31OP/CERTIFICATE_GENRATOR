@@ -1356,11 +1356,19 @@ input:focus, select:focus {
   background: #ffffff;
   cursor: crosshair;
   margin: auto;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #previewCanvas {
   display: block;
   background: #ffffff;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #previewCanvas.drop-over {

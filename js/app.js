@@ -598,10 +598,13 @@
 
   // ── Hit Testing ────────────────────────────────────────────────────
   function hitTestFields(cx, cy) {
+    const screenScale = state.scale || 0.5;
+    // Scale-aware touch margin (ensures at least 52px touch area on mobile screens)
+    const pad = Math.max(24, Math.round(52 / screenScale));
+
     for (let i = state.fields.length - 1; i >= 0; i--) {
       const b = state.fields[i]._bbox;
       if (!b) continue;
-      const pad = 12;
       if (cx >= b.x1 - pad && cx <= b.x2 + pad && cy >= b.y1 - pad && cy <= b.y2 + pad) return i;
     }
     return -1;
@@ -795,11 +798,19 @@
   // Panning & Dragging
   function canvasCoords(e) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    if (!rect.width || !rect.height) return { x: 0.5, y: 0.5 };
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+      clientX = e.changedTouches[0].clientX;
+      clientY = e.changedTouches[0].clientY;
+    }
     return {
-      x: (clientX - rect.left) / rect.width,
-      y: (clientY - rect.top) / rect.height,
+      x: Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)),
+      y: Math.max(0, Math.min(1, (clientY - rect.top) / rect.height)),
     };
   }
 
@@ -890,7 +901,7 @@
     return Math.hypot(dx, dy);
   }
 
-  canvas.addEventListener('touchstart', e => {
+  function handleCanvasTouchStart(e) {
     if (!state.image) return;
 
     if (e.touches.length === 2) {
@@ -914,6 +925,7 @@
       if (hitIdx >= 0) {
         selectField(hitIdx);
         state.draggingField = true;
+        state.isPanning = false;
         const baseField = state.fields[hitIdx];
         const f = getEffectiveField(baseField, state.previewRowIdx);
         state.dragFieldOffX = c.x - f.x;
@@ -921,6 +933,7 @@
         e.preventDefault();
       } else {
         selectField(-1);
+        state.draggingField = false;
         state.isPanning = true;
         state.panStartX = t.clientX;
         state.panStartY = t.clientY;
@@ -928,7 +941,10 @@
         state.scrollStartY = canvasWrap.scrollTop;
       }
     }
-  }, { passive: false });
+  }
+
+  canvas.addEventListener('touchstart', handleCanvasTouchStart, { passive: false });
+  if (canvasContainer) canvasContainer.addEventListener('touchstart', handleCanvasTouchStart, { passive: false });
 
   window.addEventListener('touchmove', e => {
     if (isTouchPinch && e.touches.length === 2) {
@@ -941,36 +957,34 @@
       return;
     }
 
-    if (e.touches.length === 1) {
+    if (state.draggingField && state.activeFieldIdx >= 0 && e.touches.length > 0) {
+      e.preventDefault();
+      const c = canvasCoords(e);
+      const newX = Math.max(0.01, Math.min(0.99, c.x - state.dragFieldOffX));
+      const newY = Math.max(0.01, Math.min(0.99, c.y - state.dragFieldOffY));
+      const baseField = state.fields[state.activeFieldIdx];
+
+      if (state.editingRowIdx >= 0) {
+        if (!state.rowOverrides[state.editingRowIdx]) state.rowOverrides[state.editingRowIdx] = {};
+        if (!state.rowOverrides[state.editingRowIdx][baseField.key]) state.rowOverrides[state.editingRowIdx][baseField.key] = {};
+        state.rowOverrides[state.editingRowIdx][baseField.key].x = newX;
+        state.rowOverrides[state.editingRowIdx][baseField.key].y = newY;
+        updateTableRowHighlights();
+      } else {
+        baseField.x = newX;
+        baseField.y = newY;
+      }
+      render();
+      return;
+    }
+
+    if (state.isPanning && e.touches.length > 0) {
+      e.preventDefault();
       const t = e.touches[0];
-      if (state.isPanning) {
-        e.preventDefault();
-        const dx = t.clientX - state.panStartX;
-        const dy = t.clientY - state.panStartY;
-        canvasWrap.scrollLeft = state.scrollStartX - dx;
-        canvasWrap.scrollTop = state.scrollStartY - dy;
-        return;
-      }
-
-      if (state.draggingField && state.activeFieldIdx >= 0) {
-        e.preventDefault();
-        const c = canvasCoords(e);
-        const newX = Math.max(0, Math.min(1, c.x - state.dragFieldOffX));
-        const newY = Math.max(0, Math.min(1, c.y - state.dragFieldOffY));
-        const baseField = state.fields[state.activeFieldIdx];
-
-        if (state.editingRowIdx >= 0) {
-          if (!state.rowOverrides[state.editingRowIdx]) state.rowOverrides[state.editingRowIdx] = {};
-          if (!state.rowOverrides[state.editingRowIdx][baseField.key]) state.rowOverrides[state.editingRowIdx][baseField.key] = {};
-          state.rowOverrides[state.editingRowIdx][baseField.key].x = newX;
-          state.rowOverrides[state.editingRowIdx][baseField.key].y = newY;
-          updateTableRowHighlights();
-        } else {
-          baseField.x = newX;
-          baseField.y = newY;
-        }
-        render();
-      }
+      const dx = t.clientX - state.panStartX;
+      const dy = t.clientY - state.panStartY;
+      canvasWrap.scrollLeft = state.scrollStartX - dx;
+      canvasWrap.scrollTop = state.scrollStartY - dy;
     }
   }, { passive: false });
 
