@@ -2240,6 +2240,22 @@
     }, 150);
   });
 
+  // ── Mobile Device Recommendation Overlay ───────────────────────────
+  const mobileNoticeOverlay = document.getElementById('mobileNoticeOverlay');
+  const btnDismissMobileNotice = document.getElementById('btnDismissMobileNotice');
+
+  if (btnDismissMobileNotice && mobileNoticeOverlay) {
+    if (sessionStorage.getItem('dismissMobileNotice') === '1') {
+      mobileNoticeOverlay.classList.add('dismissed');
+    }
+
+    btnDismissMobileNotice.addEventListener('click', () => {
+      mobileNoticeOverlay.classList.add('dismissed');
+      try { sessionStorage.setItem('dismissMobileNotice', '1'); } catch (_) {}
+      setTimeout(() => autoFitZoom(), 150);
+    });
+  }
+
   // ── Initialization ─────────────────────────────────────────────────
   fontTriggerLabel.style.fontFamily = state.committedFont;
   buildVarChips();
