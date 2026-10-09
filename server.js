@@ -5,6 +5,9 @@ const path       = require('path');
 
 const app = express();
 
+// Trust reverse proxy (Render, Cloudflare, Nginx, Railway)
+app.set('trust proxy', 1);
+
 // Security Headers Middleware
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -38,7 +41,7 @@ app.use(express.static(path.join(__dirname), {
 const rateLimitMap = new Map();
 function rateLimiter({ windowMs = 60000, max = 30, message = 'Too many requests, please try again later.' } = {}) {
   return (req, res, next) => {
-    const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const now = Date.now();
     
     let record = rateLimitMap.get(ip);
@@ -88,6 +91,8 @@ app.get('/api/health', (req, res) => {
 // Helper: create nodemailer transporter with IPv4 forced for cloud reliability
 function createSmtpTransporter(smtp) {
   const port = parseInt(smtp.port, 10) || 587;
+  const allowSelfSigned = process.env.ALLOW_SELF_SIGNED_SMTP === 'true' || smtp.allowSelfSigned === true;
+
   return nodemailer.createTransport({
     host: smtp.host,
     port: port,
@@ -97,7 +102,7 @@ function createSmtpTransporter(smtp) {
       pass: smtp.pass,
     },
     tls: {
-      rejectUnauthorized: false,
+      rejectUnauthorized: !allowSelfSigned,
     },
     family: 4, // Force IPv4 to prevent ENETUNREACH in cloud environments like Render/Railway
     connectionTimeout: 10000,
@@ -144,21 +149,26 @@ app.post('/api/send-email', rateLimiter({ windowMs: 60000, max: 120, message: 'R
   }
 
   // Basic email syntax check
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(to).trim())) {
+  const recipientEmail = String(to).trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
     return res.status(400).json({
       ok: false,
       error: `Invalid email address format: "${to}"`
     });
   }
 
+  // Sanitize subject and fromName to prevent header injection
+  const sanitizedSubject = String(subject).replace(/[\r\n]+/g, ' ').trim().slice(0, 255);
+  const sanitizedFromName = smtp.fromName ? String(smtp.fromName).replace(/[\r\n"<>]+/g, ' ').trim().slice(0, 100) : '';
+
   try {
     const transporter = createSmtpTransporter(smtp);
-    const fromAddress = smtp.fromName ? `"${smtp.fromName}" <${smtp.user}>` : smtp.user;
+    const fromAddress = sanitizedFromName ? `"${sanitizedFromName}" <${smtp.user}>` : smtp.user;
 
     const info = await transporter.sendMail({
       from: fromAddress,
-      to: String(to).trim(),
-      subject: String(subject),
+      to: recipientEmail,
+      subject: sanitizedSubject,
       html: html || '',
       priority: 'high',
       headers: {
@@ -168,7 +178,7 @@ app.post('/api/send-email', rateLimiter({ windowMs: 60000, max: 120, message: 'R
         'X-Mailer': 'VG Certificate Distributor v1.0',
       },
       attachments: [{
-        filename: filename || 'Certificate.png',
+        filename: filename ? String(filename).replace(/[\r\n"/\\]+/g, '_') : 'Certificate.png',
         content: attachmentBase64,
         encoding: 'base64',
         contentType: 'image/png',

@@ -11,8 +11,8 @@
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/vibe-grid/certificate-studio.git
-cd certificate-studio
+git clone https://github.com/VG31OP/CERTIFICATE_GENRATOR.git
+cd CERTIFICATE_GENRATOR
 
 # 2. Install dependencies
 npm install
