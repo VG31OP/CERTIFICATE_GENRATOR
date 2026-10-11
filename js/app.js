@@ -1718,39 +1718,71 @@
 
 
 
-  // ── Certificate Blob Generation ────────────────────────────────────
-  function generateCertBlob(rowData, rowIdx = -1) {
-    return new Promise(resolve => {
-      const off = document.createElement('canvas');
-      off.width = state.naturalW;
-      off.height = state.naturalH;
-      const oc = off.getContext('2d');
-      oc.fillStyle = '#ffffff';
-      oc.fillRect(0, 0, state.naturalW, state.naturalH);
-      oc.drawImage(state.image, 0, 0, state.naturalW, state.naturalH);
-      for (const baseField of state.fields) {
-        const field = getEffectiveField(baseField, rowIdx);
-        let value = '';
-        if (rowData && rowData[baseField.key] !== undefined && rowData[baseField.key] !== '') {
-          value = rowData[baseField.key];
-        } else if (field.customValue !== undefined && field.customValue !== null) {
-          value = field.customValue;
-        } else if (field.isCustomText) {
-          value = field.key;
-        } else {
-          value = formatFieldPlaceholder(baseField.key);
-        }
-        if (!value) continue;
-        drawFieldOnCtx(oc, field, value, field.x * state.naturalW, field.y * state.naturalH);
+  // ── Certificate Data URL & Blob Generation ─────────────────────────
+  function generateCertCanvas(rowData, rowIdx = -1) {
+    const w = Number(state.naturalW) || 2000;
+    const h = Number(state.naturalH) || 1414;
+    const off = document.createElement('canvas');
+    off.width = w;
+    off.height = h;
+    const oc = off.getContext('2d');
+    oc.fillStyle = '#ffffff';
+    oc.fillRect(0, 0, w, h);
+    if (state.image) {
+      try {
+        oc.drawImage(state.image, 0, 0, w, h);
+      } catch (e) {
+        console.warn('[VG Studio] Could not draw template image on export canvas:', e);
       }
-      off.toBlob(resolve, 'image/png');
+    }
+    for (const baseField of state.fields) {
+      const field = getEffectiveField(baseField, rowIdx);
+      let value = '';
+      if (rowData && rowData[baseField.key] !== undefined && rowData[baseField.key] !== '') {
+        value = rowData[baseField.key];
+      } else if (field.customValue !== undefined && field.customValue !== null) {
+        value = field.customValue;
+      } else if (field.isCustomText) {
+        value = field.key;
+      } else {
+        value = formatFieldPlaceholder(baseField.key);
+      }
+      if (!value) continue;
+      drawFieldOnCtx(oc, field, value, field.x * w, field.y * h);
+    }
+    return off;
+  }
+
+  function generateCertDataUrl(rowData, rowIdx = -1, mimeType = 'image/jpeg', quality = 0.92) {
+    const offCanvas = generateCertCanvas(rowData, rowIdx);
+    return offCanvas.toDataURL(mimeType, quality);
+  }
+
+  function generateCertBlob(rowData, rowIdx = -1, mimeType = 'image/png', quality = 0.92) {
+    return new Promise((resolve, reject) => {
+      try {
+        const offCanvas = generateCertCanvas(rowData, rowIdx);
+        offCanvas.toBlob(blob => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas export to blob failed'));
+        }, mimeType, quality);
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 
   function blobToBase64(blob) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result.split(',')[1]);
+      reader.onloadend = () => {
+        if (reader.result) {
+          resolve(reader.result.split(',')[1]);
+        } else {
+          reject(new Error('Blob to base64 conversion failed'));
+        }
+      };
+      reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
   }
@@ -1779,149 +1811,221 @@
   btnDownloadPng.addEventListener('click', async () => {
     exportDropdownWrap.classList.remove('open');
     if (!state.image) { toast('Load a certificate template first', 'warning'); return; }
-    const rowIdx = state.previewRowIdx;
-    const rowData = state.excelData[rowIdx] || {};
-    const blob = await generateCertBlob(rowData, rowIdx);
-    const label = rowData.name ? safeName(rowData.name) : 'certificate';
-    triggerDownload(blob, `${label}_VG_Certificate.png`);
-    toast('PNG downloaded!', 'success');
+    try {
+      const rowIdx = state.previewRowIdx;
+      const rowData = state.excelData[rowIdx] || {};
+      const blob = await generateCertBlob(rowData, rowIdx, 'image/png');
+      const label = rowData.name ? safeName(rowData.name) : 'certificate';
+      triggerDownload(blob, `${label}_VG_Certificate.png`);
+      toast('PNG downloaded!', 'success');
+    } catch (err) {
+      console.error('[VG Studio] PNG export failed:', err);
+      toast('Failed to generate PNG: ' + err.message, 'error');
+    }
   });
 
   btnDownloadPdf.addEventListener('click', async () => {
     exportDropdownWrap.classList.remove('open');
     if (!state.image) { toast('Load a certificate template first', 'warning'); return; }
     if (typeof window.jspdf === 'undefined') { toast('jsPDF library loading...', 'warning'); return; }
-    const rowIdx = state.previewRowIdx;
-    const rowData = state.excelData[rowIdx] || {};
-    const blob = await generateCertBlob(rowData, rowIdx);
-    const base64 = await blobToBase64(blob);
-    const label = rowData.name ? safeName(rowData.name) : 'certificate';
+    try {
+      const rowIdx = state.previewRowIdx;
+      const rowData = state.excelData[rowIdx] || {};
+      const dataUrl = generateCertDataUrl(rowData, rowIdx, 'image/jpeg', 0.95);
+      const label = rowData.name ? safeName(rowData.name) : 'certificate';
 
-    const { jsPDF } = window.jspdf;
-    const orientation = state.naturalW >= state.naturalH ? 'landscape' : 'portrait';
-    const pdf = new jsPDF({
-      orientation,
-      unit: 'px',
-      format: [state.naturalW, state.naturalH]
-    });
-    pdf.addImage(`data:image/png;base64,${base64}`, 'PNG', 0, 0, state.naturalW, state.naturalH);
-    pdf.save(`${label}_VG_Certificate.pdf`);
-    toast('PDF downloaded!', 'success');
+      const { jsPDF } = window.jspdf;
+      const pageW = Number(state.naturalW) || 2000;
+      const pageH = Number(state.naturalH) || 1414;
+      const orientation = pageW >= pageH ? 'landscape' : 'portrait';
+      const pdf = new jsPDF({
+        orientation,
+        unit: 'px',
+        format: [pageW, pageH],
+        compress: true
+      });
+      pdf.addImage(dataUrl, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+      const pdfBlob = pdf.output('blob');
+      triggerDownload(pdfBlob, `${label}_VG_Certificate.pdf`);
+      toast('PDF downloaded!', 'success');
+    } catch (err) {
+      console.error('[VG Studio] Single PDF export error:', err);
+      toast('Failed to generate PDF: ' + err.message, 'error');
+    }
   });
 
   btnDownloadZip.addEventListener('click', async () => {
     exportDropdownWrap.classList.remove('open');
+    if (!state.image) { toast('Load a certificate template first', 'warning'); return; }
     const rows = state.excelData;
     if (!rows.length) { toast('Upload recipient data or load sample data first', 'warning'); return; }
     if (!state.fields.length) { toast('Place at least one field on the canvas first', 'warning'); return; }
     if (typeof JSZip === 'undefined') { toast('JSZip not loaded', 'warning'); return; }
 
     progressWrap.classList.add('visible');
-    const zip = new JSZip();
-
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const label = row.name || `recipient_${i + 1}`;
-      progressFill.style.width = `${(i / rows.length) * 100}%`;
-      progressLbl.textContent = `Rendering ${i + 1}/${rows.length}: ${label}`;
-      const blob = await generateCertBlob(row, i);
-      zip.file(`${safeName(label)}_${i + 1}.png`, blob);
-      await new Promise(r => setTimeout(r, 0));
-    }
-
-    progressFill.style.width = '100%';
-    progressLbl.textContent = 'Compressing into ZIP…';
-    await new Promise(r => setTimeout(r, 50));
-    const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
-    triggerDownload(zipBlob, 'VG_Certificates_PNG_Batch.zip');
-    progressWrap.classList.remove('visible');
     progressFill.style.width = '0%';
-    toast(`${rows.length} PNG certificates exported to ZIP!`, 'success');
+    progressLbl.textContent = 'Preparing PNG batch…';
+    await new Promise(r => setTimeout(r, 40));
+
+    try {
+      const zip = new JSZip();
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const label = row.name || `recipient_${i + 1}`;
+        const pct = Math.round(((i + 1) / rows.length) * 100);
+        progressFill.style.width = `${pct}%`;
+        progressLbl.textContent = `Rendering PNG ${i + 1} of ${rows.length}: ${label}`;
+        const blob = await generateCertBlob(row, i, 'image/png');
+        zip.file(`${safeName(label)}_${i + 1}.png`, blob);
+        await new Promise(r => setTimeout(r, 15));
+      }
+
+      progressFill.style.width = '100%';
+      progressLbl.textContent = 'Compressing PNGs into ZIP archive…';
+      await new Promise(r => setTimeout(r, 50));
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+      triggerDownload(zipBlob, 'VG_Certificates_PNG_Batch.zip');
+      toast(`${rows.length} PNG certificates exported to ZIP!`, 'success');
+    } catch (err) {
+      console.error('[VG Studio] Batch PNG export error:', err);
+      toast('Batch PNG export failed: ' + (err.message || 'Unknown error'), 'error');
+    } finally {
+      progressWrap.classList.remove('visible');
+      progressFill.style.width = '0%';
+    }
   });
 
   if (btnDownloadPdfZip) {
     btnDownloadPdfZip.addEventListener('click', async () => {
       exportDropdownWrap.classList.remove('open');
+      if (!state.image) { toast('Please upload or select a certificate template first', 'warning'); return; }
       const rows = state.excelData;
       if (!rows.length) { toast('Upload recipient data or load sample data first', 'warning'); return; }
       if (!state.fields.length) { toast('Place at least one field on the canvas first', 'warning'); return; }
-      if (typeof JSZip === 'undefined') { toast('JSZip library loading...', 'warning'); return; }
-      if (typeof window.jspdf === 'undefined') { toast('jsPDF library loading...', 'warning'); return; }
+      if (typeof JSZip === 'undefined') { toast('JSZip library loading, please try again...', 'warning'); return; }
+      if (typeof window.jspdf === 'undefined') { toast('jsPDF library loading, please try again...', 'warning'); return; }
 
       progressWrap.classList.add('visible');
-      const zip = new JSZip();
-      const { jsPDF } = window.jspdf;
-      const orientation = state.naturalW >= state.naturalH ? 'landscape' : 'portrait';
-
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const label = row.name || `recipient_${i + 1}`;
-        progressFill.style.width = `${(i / rows.length) * 100}%`;
-        progressLbl.textContent = `Rendering PDF ${i + 1}/${rows.length}: ${label}`;
-        
-        const blob = await generateCertBlob(row, i);
-        const base64 = await blobToBase64(blob);
-        const pdf = new jsPDF({
-          orientation,
-          unit: 'px',
-          format: [state.naturalW, state.naturalH]
-        });
-        pdf.addImage(`data:image/png;base64,${base64}`, 'PNG', 0, 0, state.naturalW, state.naturalH);
-        const pdfBlob = pdf.output('blob');
-        zip.file(`${safeName(label)}_${i + 1}.pdf`, pdfBlob);
-        await new Promise(r => setTimeout(r, 0));
-      }
-
-      progressFill.style.width = '100%';
-      progressLbl.textContent = 'Compressing PDFs into ZIP…';
-      await new Promise(r => setTimeout(r, 50));
-      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
-      triggerDownload(zipBlob, 'VG_Certificates_PDF_Batch.zip');
-      progressWrap.classList.remove('visible');
       progressFill.style.width = '0%';
-      toast(`${rows.length} PDF certificates exported to ZIP!`, 'success');
+      progressLbl.textContent = 'Initializing batch PDF export…';
+      await new Promise(r => setTimeout(r, 40));
+
+      try {
+        const zip = new JSZip();
+        const { jsPDF } = window.jspdf;
+        const pageW = Number(state.naturalW) || 2000;
+        const pageH = Number(state.naturalH) || 1414;
+        const orientation = pageW >= pageH ? 'landscape' : 'portrait';
+
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const label = row.name || `recipient_${i + 1}`;
+          const pct = Math.round(((i + 1) / rows.length) * 100);
+          progressFill.style.width = `${pct}%`;
+          progressLbl.textContent = `Rendering PDF ${i + 1} of ${rows.length}: ${label}`;
+
+          const dataUrl = generateCertDataUrl(row, i, 'image/jpeg', 0.92);
+          const pdf = new jsPDF({
+            orientation,
+            unit: 'px',
+            format: [pageW, pageH],
+            compress: true
+          });
+          pdf.addImage(dataUrl, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+          const pdfBlob = pdf.output('blob');
+          zip.file(`${safeName(label)}_${i + 1}.pdf`, pdfBlob);
+
+          await new Promise(r => setTimeout(r, 15));
+        }
+
+        progressFill.style.width = '100%';
+        progressLbl.textContent = 'Packaging PDFs into ZIP archive…';
+        await new Promise(r => setTimeout(r, 50));
+
+        const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+        triggerDownload(zipBlob, 'VG_Certificates_PDF_Batch.zip');
+        toast(`${rows.length} PDF certificates exported to ZIP!`, 'success');
+      } catch (err) {
+        console.error('[VG Studio] Batch PDF export failed:', err);
+        toast('Batch PDF export failed: ' + (err.message || 'Unknown error'), 'error');
+      } finally {
+        progressWrap.classList.remove('visible');
+        progressFill.style.width = '0%';
+      }
     });
   }
 
   if (btnDownloadPdfCombined) {
     btnDownloadPdfCombined.addEventListener('click', async () => {
       exportDropdownWrap.classList.remove('open');
+      if (!state.image) {
+        toast('Please upload or select a certificate template first', 'warning');
+        return;
+      }
       const rows = state.excelData;
-      if (!rows.length) { toast('Upload recipient data or load sample data first', 'warning'); return; }
-      if (!state.fields.length) { toast('Place at least one field on the canvas first', 'warning'); return; }
-      if (typeof window.jspdf === 'undefined') { toast('jsPDF library loading...', 'warning'); return; }
-
-      progressWrap.classList.add('visible');
-      const { jsPDF } = window.jspdf;
-      const orientation = state.naturalW >= state.naturalH ? 'landscape' : 'portrait';
-      const pdf = new jsPDF({
-        orientation,
-        unit: 'px',
-        format: [state.naturalW, state.naturalH]
-      });
-
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const label = row.name || `recipient_${i + 1}`;
-        progressFill.style.width = `${(i / rows.length) * 100}%`;
-        progressLbl.textContent = `Building PDF Page ${i + 1}/${rows.length}: ${label}`;
-        
-        const blob = await generateCertBlob(row, i);
-        const base64 = await blobToBase64(blob);
-        if (i > 0) {
-          pdf.addPage([state.naturalW, state.naturalH], orientation);
-        }
-        pdf.addImage(`data:image/png;base64,${base64}`, 'PNG', 0, 0, state.naturalW, state.naturalH);
-        await new Promise(r => setTimeout(r, 0));
+      if (!rows.length) {
+        toast('Upload recipient data or load sample data first', 'warning');
+        return;
+      }
+      if (!state.fields.length) {
+        toast('Place at least one field on the canvas first', 'warning');
+        return;
+      }
+      if (typeof window.jspdf === 'undefined') {
+        toast('jsPDF library loading, please try again in a moment...', 'warning');
+        return;
       }
 
-      progressFill.style.width = '100%';
-      progressLbl.textContent = 'Saving merged document…';
-      await new Promise(r => setTimeout(r, 50));
-      pdf.save('VG_Certificates_All_Combined.pdf');
-      progressWrap.classList.remove('visible');
+      progressWrap.classList.add('visible');
       progressFill.style.width = '0%';
-      toast(`Merged multi-page PDF generated (${rows.length} pages)!`, 'success');
+      progressLbl.textContent = 'Preparing combined PDF document…';
+      await new Promise(r => setTimeout(r, 40));
+
+      try {
+        const { jsPDF } = window.jspdf;
+        const pageW = Number(state.naturalW) || 2000;
+        const pageH = Number(state.naturalH) || 1414;
+        const orientation = pageW >= pageH ? 'landscape' : 'portrait';
+
+        const pdf = new jsPDF({
+          orientation,
+          unit: 'px',
+          format: [pageW, pageH],
+          compress: true
+        });
+
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const label = row.name || `recipient_${i + 1}`;
+          const pct = Math.round(((i + 1) / rows.length) * 100);
+          progressFill.style.width = `${pct}%`;
+          progressLbl.textContent = `Building PDF Page ${i + 1} of ${rows.length}: ${label}`;
+
+          const dataUrl = generateCertDataUrl(row, i, 'image/jpeg', 0.92);
+          if (i > 0) {
+            pdf.addPage([pageW, pageH], orientation);
+          }
+          pdf.addImage(dataUrl, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+
+          // Yield to UI loop so progress bar updates smoothly and tab never freezes
+          await new Promise(r => setTimeout(r, 15));
+        }
+
+        progressFill.style.width = '100%';
+        progressLbl.textContent = 'Compiling and saving merged document…';
+        await new Promise(r => setTimeout(r, 60));
+
+        const pdfBlob = pdf.output('blob');
+        triggerDownload(pdfBlob, 'VG_Certificates_All_Combined.pdf');
+        toast(`Merged multi-page PDF generated (${rows.length} pages)!`, 'success');
+      } catch (err) {
+        console.error('[VG Studio] Merged PDF generation failed:', err);
+        toast('PDF generation failed: ' + (err.message || 'Unknown error'), 'error');
+      } finally {
+        progressWrap.classList.remove('visible');
+        progressFill.style.width = '0%';
+      }
     });
   }
 
