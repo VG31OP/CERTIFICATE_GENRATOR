@@ -1824,6 +1824,32 @@
     }
   });
 
+  // Helper: Calculate responsive standard PDF page format in points (pt).
+  // Ensures mobile and desktop PDF readers automatically open the document fitted to the device screen
+  // instead of opening 2000px zoomed in, while preserving full HD raster sharpness.
+  function getPdfPageLayout() {
+    const rawW = Number(state.naturalW) || 2000;
+    const rawH = Number(state.naturalH) || 1414;
+    const isLandscape = rawW >= rawH;
+    const aspect = rawW / rawH;
+
+    // Standard A4 reference dimension in points (842 pt x 595 pt)
+    let pageW, pageH;
+    if (isLandscape) {
+      pageW = 842;
+      pageH = Math.round(842 / aspect);
+    } else {
+      pageH = 842;
+      pageW = Math.round(842 * aspect);
+    }
+
+    return {
+      orientation: isLandscape ? 'landscape' : 'portrait',
+      pageW,
+      pageH,
+    };
+  }
+
   btnDownloadPdf.addEventListener('click', async () => {
     exportDropdownWrap.classList.remove('open');
     if (!state.image) { toast('Load a certificate template first', 'warning'); return; }
@@ -1835,19 +1861,23 @@
       const label = rowData.name ? safeName(rowData.name) : 'certificate';
 
       const { jsPDF } = window.jspdf;
-      const pageW = Number(state.naturalW) || 2000;
-      const pageH = Number(state.naturalH) || 1414;
-      const orientation = pageW >= pageH ? 'landscape' : 'portrait';
+      const { orientation, pageW, pageH } = getPdfPageLayout();
+
       const pdf = new jsPDF({
         orientation,
-        unit: 'px',
+        unit: 'pt',
         format: [pageW, pageH],
         compress: true
       });
+
+      if (typeof pdf.setDisplayMode === 'function') {
+        pdf.setDisplayMode('fullpage', 'continuous');
+      }
+
       pdf.addImage(dataUrl, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
       const pdfBlob = pdf.output('blob');
       triggerDownload(pdfBlob, `${label}_VG_Certificate.pdf`);
-      toast('PDF downloaded!', 'success');
+      toast('PDF downloaded (auto-fit for all devices)!', 'success');
     } catch (err) {
       console.error('[VG Studio] Single PDF export error:', err);
       toast('Failed to generate PDF: ' + err.message, 'error');
@@ -1914,9 +1944,7 @@
       try {
         const zip = new JSZip();
         const { jsPDF } = window.jspdf;
-        const pageW = Number(state.naturalW) || 2000;
-        const pageH = Number(state.naturalH) || 1414;
-        const orientation = pageW >= pageH ? 'landscape' : 'portrait';
+        const { orientation, pageW, pageH } = getPdfPageLayout();
 
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
@@ -1928,10 +1956,15 @@
           const dataUrl = generateCertDataUrl(row, i, 'image/jpeg', 0.92);
           const pdf = new jsPDF({
             orientation,
-            unit: 'px',
+            unit: 'pt',
             format: [pageW, pageH],
             compress: true
           });
+
+          if (typeof pdf.setDisplayMode === 'function') {
+            pdf.setDisplayMode('fullpage', 'continuous');
+          }
+
           pdf.addImage(dataUrl, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
           const pdfBlob = pdf.output('blob');
           zip.file(`${safeName(label)}_${i + 1}.pdf`, pdfBlob);
@@ -1984,16 +2017,18 @@
 
       try {
         const { jsPDF } = window.jspdf;
-        const pageW = Number(state.naturalW) || 2000;
-        const pageH = Number(state.naturalH) || 1414;
-        const orientation = pageW >= pageH ? 'landscape' : 'portrait';
+        const { orientation, pageW, pageH } = getPdfPageLayout();
 
         const pdf = new jsPDF({
           orientation,
-          unit: 'px',
+          unit: 'pt',
           format: [pageW, pageH],
           compress: true
         });
+
+        if (typeof pdf.setDisplayMode === 'function') {
+          pdf.setDisplayMode('fullpage', 'continuous');
+        }
 
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
