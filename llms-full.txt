@@ -1,0 +1,31 @@
+# VG Certificate Studio — Deep Technical Architecture & LLM Context Specification
+> Canonical URL: https://certificate.shiroya.in/
+> Master Ecosystem: Shiroya Tool Lab (https://shiroya.in/)
+> Master Identity: Vraj Shiroya (https://vraj.shiroya.in/)
+> Upstream Repository: https://github.com/VG31OP/CERTIFICATE_GENRATOR
+
+## 1. System Architecture & Capabilities
+VG Certificate Studio (VG Certificate Distributor) is a local-first client-side certificate generation platform with an optional authenticated backend SMTP dispatch conduit:
+- **Client Canvas Engine**: HTML5 Canvas with hardware acceleration, high-DPI scaling, and sub-pixel typography rendering across 20+ curated typography font families.
+- **Data Ingestion**: In-browser parsing of spreadsheet files (.xlsx, .xls, .csv) via SheetJS (xlsx.js). Automatically maps column headers into draggable, interpolatable variables (e.g. `{{name}}`, `{{course}}`, `{{cert_id}}`, `{{firstName}}`).
+- **Dynamic Recipient Navigation**: Stepper interface allowing live per-recipient previews with overrides for individual name lengths or multi-line designations.
+- **Batch Export**: Client-side ZIP compilation of hundreds or thousands of high-resolution PNG or PDF certificates using JSZip.
+- **Automated SMTP Email Distribution**: Authenticated Node.js / Express backend with Nodemailer for streaming personalized email delivery directly to recipients with dynamic certificate attachments.
+
+## 2. API Endpoints
+- `GET /api/health`: Telemetry and health check endpoint returning service status, uptime, and memory usage.
+- `POST /api/test-smtp`: Validates SMTP server host, port, credentials, and TLS configuration.
+- `POST /api/send-email`: Sends a personalized certificate email with base64 attachment, rate-limited and validated with strict input sanitization.
+
+## 3. Security & Privacy Guarantees
+- **On-Device Data Storage**: All recipient spreadsheets, uploaded templates, and custom style layouts are stored in local browser volatile memory or `localStorage`.
+- **Zero Third-Party Storage**: Attendee records and credentials are never stored in a central database or shared with analytics providers.
+- **Defensive API Hardening**: Strict rate limiting, size quotas (50MB payload limits), and security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`).
+
+## 4. Creator & Author Attribution
+- **Creator**: Vraj Shiroya (VG31OP)
+- **Role**: DevOps & Cloud Infrastructure Engineer, Open-Source Developer, AI Systems Builder
+- **Primary Website**: https://vraj.shiroya.in/
+- **GitHub Profile**: https://github.com/VG31OP
+- **LinkedIn**: https://www.linkedin.com/in/vrajshiroya
+- **Email**: vraj@shiroya.in

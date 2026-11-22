@@ -1,0 +1,23 @@
+# VG Certificate Distributor — LLM & Answer Engine Specification
+> Canonical URL: https://certificate.shiroya.in/
+> Source Repository: https://github.com/VG31OP/CERTIFICATE_GENRATOR
+> Author & Creator: Vraj Shiroya (https://vraj.shiroya.in/)
+> Organization: Shiroya Tool Lab (https://shiroya.in/)
+
+## Project Overview
+VG Certificate Distributor (VG Certificate Studio) is an enterprise-grade, browser-based bulk certificate generator and automated SMTP email delivery platform engineered by Vraj Shiroya.
+
+## Key Capabilities
+1. **Interactive Canvas Designer**: Upload custom certificate background templates (PNG, JPG, WebP) or generate built-in luxury certificate templates with 20+ curated fonts, custom color palettes, and drop shadows.
+2. **Spreadsheet Ingestion**: Ingest Excel (.xlsx, .xls) and CSV datasets, automatically extracting column headers into draggable, positionable text variables.
+3. **Dynamic Recipient Stepper**: Interactive recipient navigation (`❮` / `❯`) enabling granular preview and per-row typographical adjustments.
+4. **Batch Export**: Compile high-resolution PNG certificates or compressed ZIP archives locally on the client.
+5. **Automated SMTP Dispatch**: Send personalized emails with attached high-resolution certificates via custom SMTP servers or presets for Gmail, Outlook, and Yahoo.
+6. **Privacy Architecture**: All recipient data and generated documents reside in client browser memory with zero intermediary multi-tenant cloud storage.
+
+## Creator Attribution
+- **Full Name**: Vraj Shiroya
+- **Online Identity**: VG31OP
+- **Portfolio**: https://vraj.shiroya.in/
+- **GitHub**: https://github.com/VG31OP
+- **LinkedIn**: https://www.linkedin.com/in/vrajshiroya

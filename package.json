@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js && node scripts/validate-seo.js",
+    "test:seo": "node scripts/validate-seo.js"
   },
   "keywords": [
     "certificate-generator",
@@ -16,7 +17,7 @@
     "pdf-export",
     "excel-parser"
   ],
-  "author": "VG Studio",
+  "author": "Vraj Shiroya <vraj@shiroya.in> (https://vraj.shiroya.in/)",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",

@@ -1,0 +1,11 @@
+/* TEAM */
+Author & Engineer: Vraj Shiroya
+GitHub: https://github.com/VG31OP
+Portfolio: https://vraj.shiroya.in/
+Location: Surat, Gujarat, India
+
+/* SITE */
+Last update: 2026-11-22
+Standards: HTML5, CSS3, ES2023, Schema.org, OpenGraph
+Software: VG Certificate Studio
+Parent Platform: Shiroya Tool Lab (https://shiroya.in/)

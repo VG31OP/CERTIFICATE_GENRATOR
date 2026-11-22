@@ -196,5 +196,15 @@ Click **"Compose Email"** to tailor the message sent to each recipient:
 
 ---
 
+## Author & Creator
+
+Made with ❤ by **[Vraj Shiroya](https://vraj.shiroya.in/)** (`@VG31OP`)
+- Official Portfolio: [https://vraj.shiroya.in/](https://vraj.shiroya.in/)
+- GitHub: [@VG31OP](https://github.com/VG31OP)
+- Shiroya Tool Lab: [https://shiroya.in/](https://shiroya.in/)
+- Live Web App: [https://certificate.shiroya.in/](https://certificate.shiroya.in/)
+
+---
+
 ## License
 MIT License

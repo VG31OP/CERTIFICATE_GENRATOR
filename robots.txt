@@ -1,6 +1,27 @@
-# robots.txt for VG Certificate Studio
+# robots.txt for VG Certificate Studio (certificate.shiroya.in)
+# Author: Vraj Shiroya (https://vraj.shiroya.in/)
+
 User-agent: *
 Allow: /
 
-# Sitemap
+# AI Search & Answer Engine Directives
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# Block Aggressive Scrapers with No Discovery Benefit
+User-agent: Bytespider
+Disallow: /
+
 Sitemap: https://certificate.shiroya.in/sitemap.xml
